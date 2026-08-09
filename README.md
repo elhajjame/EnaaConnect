@@ -148,4 +148,4 @@ For full details, refer to the [Software Requirements Specification](./EnaaConne
 
 ---
 
-<p align="center">Made with 🎓 for a more connected school community.</p>
+<p align="center">Made with Mehdi El Hajjame for a more connected school community.</p>
