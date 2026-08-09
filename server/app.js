@@ -1,5 +1,6 @@
 import express from "express";
 import morgan from "morgan";
+import globalErrorHandler from "./middleware/errorMiddleware.js";
 import authRoute from "./routes/authRoute.js";
 const app = express();
 app.use(express.json());
@@ -13,11 +14,12 @@ app.get("/", (req, res) => {
 });
 
 app.all("*splat", (req, res, next) => {
-  res.status(404).json({
-    status: "fail",
-    message: `can't find ${req.originalUrl} on this server!`,
-  });
-  next();
+  const err = new Error(`can't find ${req.originalUrl} on this server!`);
+  err.status = "fail";
+  err.statusCode = 400;
+
+  next(err);
 });
 
+app.use(globalErrorHandler);
 export default app;
