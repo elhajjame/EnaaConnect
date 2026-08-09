@@ -1,5 +1,13 @@
 {
+  "scripts": {
+    "client": "npm run dev --prefix client",
+    "server": "npm run dev --prefix server",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
   "dependencies": {
-    "mongoose": "^9.8.1"
+    "dotenv": "^17.4.2",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.8.1",
+    "morgan": "^1.11.0"
   }
 }
