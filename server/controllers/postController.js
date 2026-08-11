@@ -1,7 +1,7 @@
-import Post from "../models/PostModel";
-import route from "../routes/authRoute";
-import AppError from "../utils/appError";
-import catchAsync from "../utils/catchAsync";
+import Post from "../models/PostModel.js";
+import route from "../routes/authRoute.js";
+import AppError from "../utils/appError.js";
+import catchAsync from "../utils/catchAsync.js";
 
 export const createPost = catchAsync(async (req, res, next) => {
   const { content, image } = req.body;

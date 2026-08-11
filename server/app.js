@@ -2,12 +2,14 @@ import express from "express";
 import morgan from "morgan";
 import globalErrorHandler from "./middleware/errorMiddleware.js";
 import authRoute from "./routes/authRoute.js";
+import postRoute from "./routes/postRoute.js";
 const app = express();
 app.use(express.json());
 
 app.use(morgan("dev"));
 
 app.use("/api/auth", authRoute);
+app.use("/api", postRoute);
 
 app.get("/", (req, res) => {
   res.send("api is working");
