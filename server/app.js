@@ -1,7 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import globalErrorHandler from "./middleware/errorMiddleware.js";
-import authRoute from "./routes/authRoute.js";
+import authRoute from "./routes/userRoute.js";
 const app = express();
 app.use(express.json());
 
