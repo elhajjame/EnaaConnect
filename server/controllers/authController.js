@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/UserModel.js";
 import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/appError.js";
-
+import crypto from "crypto";
 import { sendEmail } from "../utils/email.js";
 
 const generateToken = (userId) => {
@@ -77,7 +77,7 @@ export const forgetPassword = catchAsync(async (req, res, next) => {
   } catch (error) {
     console.log("EMAIL ERROR:", error);
 
-    user.PasswordResetToken = undefined;
+    user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save({ validateBeforeSave: false });
 
@@ -87,4 +87,31 @@ export const forgetPassword = catchAsync(async (req, res, next) => {
   }
 });
 
-export const resetPassword = catchAsync(async (req, res, next) => {});
+export const resetPassword = catchAsync(async (req, res, next) => {
+  // 1) get the user based on the token
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+  // 2) if token has no expired and theres user set the new password
+  if (!user) {
+    return next(new AppError("Token is invalid or has expired", 400));
+  }
+
+  user.password = req.body.password;
+  user.confirmPassword = req.body.confirmPassword;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+
+  await user.save();
+  // 3) update changedPasswordAt property for the user
+
+  // 4) log the user in and send JWT
+  const token = generateToken(user._id);
+  res.status(201).json({ status: "success", token });
+});

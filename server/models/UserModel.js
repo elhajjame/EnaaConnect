@@ -26,11 +26,16 @@ const userSchema = new mongoose.Schema(
     },
     confirmPassword: {
       type: String,
-      required: true,
+      required: [true, "Please confirm your password"],
       minlength: 8,
       select: false,
+      validate: {
+        validator: function (el) {
+          return el === this.password;
+        },
+      },
     },
-    PasswordResetToken: { type: String },
+    passwordResetToken: { type: String },
     passwordResetExpires: { type: Date },
     profilePicture: {
       type: String,
@@ -84,11 +89,17 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    passwordChangedAt: Date,
   },
   {
     timestamps: true,
   },
 );
+
+userSchema.pre("save", async function () {
+  if (!this.isModified("password") || this.isNew) return;
+  this.passwordChangedAt = Date.now() - 2000;
+});
 
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) {
@@ -108,15 +119,14 @@ userSchema.methods.comparePassword = async function (
 userSchema.methods.createPasswordResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString("hex");
 
-  this.PasswordResetToken = crypto
+  this.passwordResetToken = crypto
     .createHash("sha256")
     .update(resetToken)
     .digest("hex");
 
-  console.log({ resetToken }, this.PasswordResetToken);
+  console.log({ resetToken }, this.passwordResetToken);
 
-  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
-
+  this.passwordResetExpires = Date.now() + 1 * 60 * 60 * 1000;
   return resetToken;
 };
 const User = mongoose.model("User", userSchema);
