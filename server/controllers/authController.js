@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/UserModel.js";
 import crypto from "crypto";
 import { sendEmail } from "../utils/email.js";
-import { errorResponse, successResponse } from "../responses/respons.js";
+import { errorResponse, successResponse } from "../responses/response.js";
 
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -10,29 +10,29 @@ const generateToken = (userId) => {
   });
 };
 
-const handleControllerError = (res, error) => {
-  console.error(error);
+// const handleControllerError = (res, error) => {
+//   console.error(error);
 
-  if (error.code === 11000) {
-    return errorResponse(res, 409, "An account with this email already exists");
-  }
+//   if (error.code === 11000) {
+//     return errorResponse(res, 409, "An account with this email already exists");
+//   }
 
-  if (error.name === "ValidationError") {
-    const message = Object.values(error.errors)
-      .map((validationError) => validationError.message)
-      .join(", ");
+//   if (error.name === "ValidationError") {
+//     const message = Object.values(error.errors)
+//       .map((validationError) => validationError.message)
+//       .join(", ");
 
-    return errorResponse(res, 400, message);
-  }
+//     return errorResponse(res, 400, message);
+//   }
 
-  return errorResponse(res, 500, "Internal server error");
-};
+//   return errorResponse(res, 500, "Internal server error");
+// };
 
 export const register = async (req, res) => {
   try {
     const { fullName, email, password, confirmPassword, role } = req.body;
     if (password !== confirmPassword) {
-      return errorResponse(res, 400, "Passwords do not match");
+      errorResponse(res, 400, "Passwords do not match");
     }
 
     const newUser = await User.create({
@@ -60,7 +60,8 @@ export const register = async (req, res) => {
       "The user has been created successfully",
     );
   } catch (error) {
-    return handleControllerError(res, error);
+    console.error(error);
+    return errorResponse(res, 500, "Internal server error");
   }
 };
 
@@ -87,7 +88,8 @@ export const login = async (req, res) => {
 
     return successResponse(res, 200, { token }, "Login successful");
   } catch (error) {
-    return handleControllerError(res, error);
+    console.error(error);
+    return errorResponse(res, 500, "Internal server error");
   }
 };
 
@@ -96,7 +98,11 @@ export const forgetPassword = async (req, res) => {
     // 1) get the user based on POSTed email
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
-      return errorResponse(res, 404, "There is no user with this email address");
+      return errorResponse(
+        res,
+        404,
+        "There is no user with this email address",
+      );
     }
 
     // 2) generate the random reset token
@@ -129,7 +135,8 @@ export const forgetPassword = async (req, res) => {
       );
     }
   } catch (error) {
-    return handleControllerError(res, error);
+    console.error(error);
+    errorResponse(res, 500, "Internal server error");
   }
 };
 
@@ -150,7 +157,7 @@ export const resetPassword = async (req, res) => {
     if (!user) {
       return errorResponse(res, 400, "Token is invalid or has expired");
     }
-    
+
     user.password = req.body.password;
     user.confirmPassword = req.body.confirmPassword;
     user.passwordResetToken = undefined;
@@ -160,13 +167,40 @@ export const resetPassword = async (req, res) => {
 
     // 3) log the user in and send JWT
     const token = generateToken(user._id);
-    return successResponse(
-      res,
-      200,
-      { token },
-      "Password reset successfully",
-    );
+    return successResponse(res, 200, { token }, "Password reset successfully");
   } catch (error) {
-    return handleControllerError(res, error);
+    console.error(error);
+    errorResponse(res, 500, "Internal server error");
+  }
+};
+
+export const getMe = (req, res) => {
+  try {
+    const {
+      _id,
+      fullName,
+      email,
+      role,
+      profilePicture,
+      fieldOfStudy,
+      biography,
+      interests,
+    } = req.user;
+
+    const safeUser = {
+      _id,
+      fullName,
+      email,
+      role,
+      profilePicture,
+      fieldOfStudy,
+      biography,
+      interests,
+    };
+
+    return successResponse(res, 200, safeUser, "User retrieved successfully");
+  } catch (error) {
+    console.error(error);
+    return errorResponse(res, 500, "Internal server error");
   }
 };
