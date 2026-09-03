@@ -1,106 +1,186 @@
-import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
-const userSchema = new mongoose.Schema(
-  {
-    fullName: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: 3,
-    },
+ import mongoose from "mongoose";
+  import bcrypt from "bcryptjs";
+  import crypto from "crypto";
 
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-    },
+  const enaaEmailPattern = /^[a-zA-Z0-9._%+-]+@enaa\.ma$/i;
 
-    password: {
-      type: String,
-      required: true,
-      minlength: 8,
-      select: false,
-    },
-    confirmPassword: {
-      type: String,
-      required: true,
-      minlength: 8,
-      select: false,
-    },
-    profilePicture: {
-      type: String,
-      default: "",
-    },
-
-    biography: {
-      type: String,
-      default: "",
-      maxlength: 500,
-    },
-
-    fieldOfStudy: {
-      type: String,
-      default: "",
-    },
-
-    class: {
-      type: String,
-      default: "",
-    },
-
-    interests: [
-      {
+  const userSchema = new mongoose.Schema(
+    {
+      fullName: {
         type: String,
+        required: [true, "Full name is required"],
+        trim: true,
+        minlength: [3, "Full name must contain at least 3 characters"],
       },
-    ],
 
-    role: {
-      type: String,
-      enum: ["student", "BDE"],
-      default: "student",
+      email: {
+        type: String,
+        required: [true, "ENAA email is required"],
+        unique: true,
+        lowercase: true,
+        trim: true,
+        match: [
+          enaaEmailPattern,
+          "Registration requires a valid @enaa.ma email address",
+        ],
+      },
+
+      password: {
+        type: String,
+        required: [true, "Password is required"],
+        minlength: [8, "Password must contain at least 8 characters"],
+        select: false,
+      },
+
+      confirmPassword: {
+        type: String,
+        required: [true, "Please confirm your password"],
+        select: false,
+        validate: {
+          validator: function (value) {
+            return value === this.password;
+          },
+          message: "Passwords do not match",
+        },
+      },
+
+      role: {
+        type: String,
+        enum: ["student", "admin"],
+        default: "student",
+      },
+      
+
+      isVerified: {
+        type: Boolean,
+        default: false,
+      },
+
+      isActive: {
+        type: Boolean,
+        default: true,
+      },
+
+      fieldOfStudy: {
+        type: String,
+        trim: true,
+        default: "",
+      },
+
+      academicYear: {
+        type: String,
+        trim: true,
+        default: "",
+      },
+
+      profilePicture: {
+        type: String,
+        default: "",
+      },
+
+      biography: {
+        type: String,
+        trim: true,
+        maxlength: [500, "Biography cannot exceed 500 characters"],
+        default: "",
+      },
+
+      interests: [
+        {
+          type: String,
+          trim: true,
+        },
+      ],
+
+      verificationToken: {
+        type: String,
+        select: false,
+      },
+
+      verificationTokenExpires: {
+        type: Date,
+        select: false,
+      },
+
+      passwordResetToken: {
+        type: String,
+        select: false,
+      },
+
+      passwordResetExpires: {
+        type: Date,
+        select: false,
+      },
+
+      passwordChangedAt: Date,
     },
-
-    isVerified: {
-      type: Boolean,
-      default: false,
+    {
+      timestamps: true,
     },
+  );
 
-    verificationToken: {
-      type: String,
-      default: null,
-    },
+  userSchema.pre("save", async function () {
+    if (!this.isModified("password")) {
+      return;
+    }
 
-    resetPasswordToken: {
-      type: String,
-      default: null,
-    },
+    this.password = await bcrypt.hash(this.password, 12);
+    this.confirmPassword = undefined;
+  });
 
-    resetPasswordExpires: {
-      type: Date,
-      default: null,
-    },
-  },
-  {
-    timestamps: true,
-  },
-);
+  userSchema.pre("save", function () {
+    if (!this.isModified("password") || this.isNew) {
+      return;
+    }
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
-    return next();
-  }
-  this.password = await bcrypt.hash(this.password, 15);
-  this.confirmPassword = undefined;
-});
+    this.passwordChangedAt = Date.now() - 1000;
+  });
 
-userSchema.methods.comparePassword = async function (
-  candidatePassword,
-  userPassword,
-) {
-  return await bcrypt.compare(candidatePassword, userPassword);
-};
+  userSchema.methods.comparePassword = async function (
+    candidatePassword,
+    storedPassword,
+  ) {
+    return bcrypt.compare(candidatePassword, storedPassword);
+  };
 
-const User = mongoose.model("User", userSchema);
-export default User;
+  userSchema.methods.changedPasswordAfter = function (jwtIssuedAt) {
+    if (!this.passwordChangedAt) {
+      return false;
+    }
+
+    const passwordChangedTimestamp = Math.floor(
+      this.passwordChangedAt.getTime() / 1000,
+    );
+
+    return passwordChangedTimestamp > jwtIssuedAt;
+  };
+
+  userSchema.methods.createEmailVerificationToken = function () {
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+
+    this.verificationToken = crypto
+      .createHash("sha256")
+      .update(verificationToken)
+      .digest("hex");
+
+    this.verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000;
+
+    return verificationToken;
+  };
+
+  userSchema.methods.createPasswordResetToken = function () {
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    this.passwordResetToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+
+    this.passwordResetExpires = Date.now() + 60 * 60 * 1000;
+
+    return resetToken;
+  };
+
+  const User = mongoose.model("User", userSchema);
+
+  export default User;
