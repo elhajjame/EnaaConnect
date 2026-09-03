@@ -7,10 +7,11 @@ import {
   resetPassword,
 } from "../controllers/authController.js";
 import protect from "../middleware/protectMiddleware.js";
+import validateRegistrationEmail from "../middleware/validateRegistrationEmail.js";
 
 const route = Router();
 
-route.post("/register", register);
+route.post("/register", validateRegistrationEmail, register)
 route.post("/login", login);
 route.post("/forget-password", forgetPassword);
 route.patch("/reset-password/:token", resetPassword);

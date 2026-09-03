@@ -28,70 +28,144 @@ const generateToken = (userId) => {
 //   return errorResponse(res, 500, "Internal server error");
 // };
 
-export const register = async (req, res) => {
-  try {
-    const { fullName, email, password, confirmPassword, role } = req.body;
-    if (password !== confirmPassword) {
-      errorResponse(res, 400, "Passwords do not match");
-    }
+  export const register = async (req, res) => {
+    try {
+      const { fullName, email, password, confirmPassword } = req.body;
 
-    const newUser = await User.create({
-      fullName,
-      email,
-      password,
-      confirmPassword,
-      role,
-    });
-    const token = generateToken(newUser._id);
+      if (!fullName || !email || !password || !confirmPassword) {
+        return errorResponse(
+          res,
+          400,
+          "Full name, email, password, and password confirmation are required",
+        );
+      }
 
-    return successResponse(
-      res,
-      201,
-      {
-        token,
-        user: {
-          id: newUser._id,
-          fullName: newUser.fullName,
-          email: newUser.email,
-          role: newUser.role,
-          isVerified: newUser.isVerified,
+      if (fullName.trim().length < 3) {
+        return errorResponse(
+          res,
+          400,
+          "Full name must contain at least 3 characters",
+        );
+      }
+
+      if (password.length < 8) {
+        return errorResponse(
+          res,
+          400,
+          "Password must contain at least 8 characters",
+        );
+      }
+
+      if (password !== confirmPassword) {
+        return errorResponse(res, 400, "Passwords do not match");
+      }
+
+      const existingUser = await User.findOne({ email });
+
+      if (existingUser) {
+        return errorResponse(
+          res,
+          409,
+          "An account with this email already exists",
+        );
+      }
+
+      const newUser = await User.create({
+        fullName,
+        email,
+        password,
+        confirmPassword,
+        role: "student",
+      });
+
+      const token = generateToken(newUser._id);
+
+      return successResponse(
+        res,
+        201,
+        {
+          token,
+          user: {
+            id: newUser._id,
+            fullName: newUser.fullName,
+            email: newUser.email,
+            role: newUser.role,
+          },
         },
-      },
-      "The user has been created successfully",
-    );
-  } catch (error) {
-    console.error(error);
-    return errorResponse(res, 500, "Internal server error");
-  }
-};
+        "Account created successfully",
+      );
+    } catch (error) {
+      console.error(error);
 
-export const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return errorResponse(res, 400, "Email and password are required");
+      // if (error.code === 11000) {
+      //   return errorResponse(
+      //     res,
+      //     409,
+      //     "An account with this email already exists",
+      //   );
+      // }
+
+      // if (error.name === "ValidationError") {
+      //   return errorResponse(res, 400, "Invalid registration information");
+      // }
+
+      return errorResponse(res, 500, "Internal server error");
     }
+  };
 
-    const user = await User.findOne({ email }).select("+password");
 
-    if (!user) {
-      return errorResponse(res, 401, "Incorrect email or password");
+ export const login = async (req, res) => {
+    try {
+      const { email, password } = req.body;
+
+      if (!email || !password) {
+        return errorResponse(res, 400, "Email and password are required");
+      }
+
+      const normalizedEmail = email.trim().toLowerCase();
+
+      const user = await User.findOne({
+        email: normalizedEmail,
+      }).select("+password");
+
+      if (!user) {
+        return errorResponse(res, 401, "Incorrect email or password");
+      }
+
+      const passwordIsCorrect = await user.comparePassword(
+        password,
+        user.password,
+      );
+
+      if (!passwordIsCorrect) {
+        return errorResponse(res, 401, "Incorrect email or password");
+      }
+
+      if (!user.isActive) {
+        return errorResponse(res, 403, "This account has been deactivated");
+      }
+
+      const token = generateToken(user._id);
+
+      return successResponse(
+        res,
+        200,
+        {
+          token,
+          user: {
+            id: user._id,
+            fullName: user.fullName,
+            email: user.email,
+            role: user.role,
+          },
+        },
+        "Login successful",
+      );
+    } catch (error) {
+      console.error(error);
+      return errorResponse(res, 500, "Internal server error");
     }
-
-    const isCorrect = await user.comparePassword(password, user.password);
-
-    if (!isCorrect) {
-      return errorResponse(res, 401, "Incorrect email or password");
-    }
-
-    const token = generateToken(user._id);
-
-    return successResponse(res, 200, { token }, "Login successful");
-  } catch (error) {
-    console.error(error);
-    return errorResponse(res, 500, "Internal server error");
-  }
-};
+  };
 
 export const forgetPassword = async (req, res) => {
   try {
@@ -116,7 +190,7 @@ export const forgetPassword = async (req, res) => {
     try {
       await sendEmail({
         email: user.email,
-        subject: "ENAA Connect - Password Reset (valid for 10 min)",
+        subject: "subject: ENAA Connect - Password Reset (valid for 1 hour)",
         message,
       });
 
