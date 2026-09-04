@@ -56,11 +56,6 @@
         default: false,
       },
 
-      isActive: {
-        type: Boolean,
-        default: true,
-      },
-
       fieldOfStudy: {
         type: String,
         trim: true,

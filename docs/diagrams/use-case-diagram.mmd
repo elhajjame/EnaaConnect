@@ -1,0 +1,192 @@
+%% EnaaConnect - Use-Case Diagram
+%% Version 2.0 - aligned with EnaaConnect SRS
+
+%%{init: {"flowchart": {"htmlLabels": true, "curve": "basis"}} }%%
+flowchart LR
+
+%% Actors
+A_Guest(["Guest"])
+A_Student(["Student"])
+A_Leader(["Club Leader"])
+A_Admin(["Administrator"])
+
+%% A club leader is a student assigned as the leader of a club.
+A_Leader -.->|"specializes"| A_Student
+
+subgraph SYS["EnaaConnect System"]
+  subgraph AUTH["Authentication"]
+    UC_Register(("Register"))
+    UC_VerifyEmail(("Verify Email"))
+    UC_Login(("Login"))
+    UC_Logout(("Logout"))
+    UC_ResetPassword(("Reset Password"))
+    UC_SendVerification(("Send Verification Email"))
+    UC_SendReset(("Send Reset Email"))
+    UC_ValidateCredentials(("Validate Credentials"))
+  end
+
+  subgraph PROFILE["Profile"]
+    UC_ViewProfile(("View Profile"))
+    UC_EditProfile(("Edit Profile"))
+    UC_UploadPicture(("Upload Profile Picture"))
+  end
+
+  subgraph POSTS["Student Feed"]
+    UC_CreatePost(("Create Post"))
+    UC_EditOwnPost(("Edit Own Post"))
+    UC_DeleteOwnPost(("Delete Own Post"))
+    UC_LikePost(("Like / Unlike Post"))
+    UC_CommentPost(("Comment on Post"))
+    UC_ValidatePost(("Validate Post Content"))
+  end
+
+  subgraph EVENTS["Events"]
+    UC_CreateEvent(("Create Event"))
+    UC_EditOwnEvent(("Edit Own Event"))
+    UC_DeleteOwnEvent(("Delete Own Event"))
+    UC_ViewEvents(("View Approved Events"))
+    UC_JoinEvent(("Join Event"))
+    UC_LeaveEvent(("Leave Event"))
+    UC_CommentEvent(("Comment on Event"))
+    UC_ShareEvent(("Share Event Link"))
+    UC_CheckEventCapacity(("Check Event Capacity"))
+  end
+
+  subgraph CLUBS["Clubs"]
+    UC_CreateClub(("Create Club"))
+    UC_JoinClub(("Join Club"))
+    UC_LeaveClub(("Leave Club"))
+    UC_AssignCreatorLeader(("Assign Creator as Leader"))
+    UC_EditManagedClub(("Edit Managed Club"))
+    UC_ManageMembers(("Manage Club Members"))
+    UC_PublishAnnouncement(("Publish Club Announcement"))
+  end
+
+  subgraph MESSAGING["Messaging"]
+    UC_CreateConversation(("Create Private Conversation"))
+    UC_CreateGroup(("Create Group Conversation"))
+    UC_SendMessage(("Send Message"))
+    UC_ReceiveMessage(("Receive Message"))
+    UC_ShareAttachment(("Share File / Document"))
+  end
+
+  subgraph TRIPS["Trips"]
+    UC_CreateTrip(("Create Trip"))
+    UC_EditOwnTrip(("Edit Own Trip"))
+    UC_DeleteOwnTrip(("Delete Own Trip"))
+    UC_JoinTrip(("Join Trip"))
+    UC_LeaveTrip(("Leave Trip"))
+    UC_TripChat(("Chat with Participants"))
+    UC_CheckTripCapacity(("Check Trip Capacity"))
+  end
+
+  subgraph NOTIFICATIONS["Notifications"]
+    UC_ViewNotifications(("View Notifications"))
+    UC_MarkRead(("Mark Notification as Read"))
+    UC_CreateNotification(("Create Notification"))
+  end
+
+  subgraph SEARCH["Search"]
+    UC_SearchStudents(("Search Students"))
+    UC_SearchClubs(("Search Clubs"))
+    UC_SearchEvents(("Search Approved Events"))
+  end
+
+  subgraph REPORTING["Reporting and Moderation"]
+    UC_ReportContent(("Report Content"))
+    UC_ReviewReports(("Review Reports"))
+    UC_DeleteContent(("Delete Inappropriate Content"))
+  end
+
+  subgraph ADMINISTRATION["Administration"]
+    UC_ManageUsers(("Manage User Accounts"))
+    UC_ApproveEvent(("Approve Event"))
+    UC_RejectEvent(("Reject Event"))
+    UC_ManageClubsAdmin(("Manage Clubs"))
+  end
+end
+
+%% Guest associations
+A_Guest --> UC_Register
+A_Guest --> UC_VerifyEmail
+A_Guest --> UC_Login
+A_Guest --> UC_ResetPassword
+
+%% Student associations
+A_Student --> UC_Logout
+A_Student --> UC_ViewProfile
+A_Student --> UC_EditProfile
+A_Student --> UC_UploadPicture
+A_Student --> UC_CreatePost
+A_Student --> UC_EditOwnPost
+A_Student --> UC_DeleteOwnPost
+A_Student --> UC_LikePost
+A_Student --> UC_CommentPost
+A_Student --> UC_CreateEvent
+A_Student --> UC_EditOwnEvent
+A_Student --> UC_DeleteOwnEvent
+A_Student --> UC_ViewEvents
+A_Student --> UC_JoinEvent
+A_Student --> UC_LeaveEvent
+A_Student --> UC_CommentEvent
+A_Student --> UC_ShareEvent
+A_Student --> UC_CreateClub
+A_Student --> UC_JoinClub
+A_Student --> UC_LeaveClub
+A_Student --> UC_CreateConversation
+A_Student --> UC_CreateGroup
+A_Student --> UC_SendMessage
+A_Student --> UC_ReceiveMessage
+A_Student --> UC_ShareAttachment
+A_Student --> UC_CreateTrip
+A_Student --> UC_EditOwnTrip
+A_Student --> UC_DeleteOwnTrip
+A_Student --> UC_JoinTrip
+A_Student --> UC_LeaveTrip
+A_Student --> UC_TripChat
+A_Student --> UC_ViewNotifications
+A_Student --> UC_MarkRead
+A_Student --> UC_SearchStudents
+A_Student --> UC_SearchClubs
+A_Student --> UC_SearchEvents
+A_Student --> UC_ReportContent
+
+%% Club leader associations (in addition to inherited student actions)
+A_Leader --> UC_EditManagedClub
+A_Leader --> UC_ManageMembers
+A_Leader --> UC_PublishAnnouncement
+
+%% Administrator associations
+A_Admin --> UC_Login
+A_Admin --> UC_Logout
+A_Admin --> UC_ResetPassword
+A_Admin --> UC_ManageUsers
+A_Admin --> UC_ApproveEvent
+A_Admin --> UC_RejectEvent
+A_Admin --> UC_ManageClubsAdmin
+A_Admin --> UC_ReviewReports
+
+%% Included behavior
+UC_Register -.->|"<<include>>"| UC_SendVerification
+UC_Login -.->|"<<include>>"| UC_ValidateCredentials
+UC_ResetPassword -.->|"<<include>>"| UC_SendReset
+UC_CreatePost -.->|"<<include>>"| UC_ValidatePost
+UC_EditOwnPost -.->|"<<include>>"| UC_ValidatePost
+UC_CreateClub -.->|"<<include>>"| UC_AssignCreatorLeader
+UC_JoinEvent -.->|"<<include>>"| UC_CheckEventCapacity
+UC_JoinTrip -.->|"<<include>>"| UC_CheckTripCapacity
+UC_CreateGroup -.->|"<<include>>"| UC_CreateConversation
+UC_ShareAttachment -.->|"<<include>>"| UC_SendMessage
+UC_LikePost -.->|"<<include>>"| UC_CreateNotification
+UC_CommentPost -.->|"<<include>>"| UC_CreateNotification
+UC_CommentEvent -.->|"<<include>>"| UC_CreateNotification
+UC_JoinEvent -.->|"<<include>>"| UC_CreateNotification
+UC_JoinClub -.->|"<<include>>"| UC_CreateNotification
+UC_SendMessage -.->|"<<include>>"| UC_CreateNotification
+UC_PublishAnnouncement -.->|"<<include>>"| UC_CreateNotification
+
+%% Optional result of reviewing a report
+UC_DeleteContent -.->|"<<extend>>"| UC_ReviewReports
+
+classDef actor fill:#e8f0fe,stroke:#1a73e8,stroke-width:2px,color:#1a237e,font-weight:bold;
+class A_Guest,A_Student,A_Leader,A_Admin actor;
