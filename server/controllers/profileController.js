@@ -1,6 +1,7 @@
 import User from "../models/UserModel.js";
 import { errorResponse, successResponse } from "../responses/response.js";
 import handleControllerError from "../utils/handleControllerError.js";
+import { uploadProfilePicToCloudinary } from "../utils/cloudinary.js";
 
 export const getPublicProfile = async (req, res) => {
   try {
@@ -68,6 +69,49 @@ export const updateMyProfile = async (req, res) => {
       200,
       profileData,
       "Profile updated successfully",
+    );
+  } catch (error) {
+    return handleControllerError(res, error);
+  }
+};
+export const updateProfilePicture = async (req, res) => {
+  try {
+    const result = await uploadProfilePicToCloudinary(
+      req.file.buffer,
+      req.user._id.toString(),
+    );
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        profilePicture: result.secure_url,
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+    if (!updatedUser) {
+      return errorResponse(res, 404, "User not found");
+    }
+
+    const profileData = {
+      id: updatedUser._id,
+      fullName: updatedUser.fullName,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      profilePicture: updatedUser.profilePicture,
+      fieldOfStudy: updatedUser.fieldOfStudy,
+      academicYear: updatedUser.academicYear,
+      biography: updatedUser.biography,
+      interests: updatedUser.interests,
+    };
+
+    return successResponse(
+      res,
+      200,
+      profileData,
+      "Profile picture updated successfully",
     );
   } catch (error) {
     return handleControllerError(res, error);
