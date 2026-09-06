@@ -141,10 +141,6 @@ const generateToken = (userId) => {
         return errorResponse(res, 401, "Incorrect email or password");
       }
 
-      if (!user.isActive) {
-        return errorResponse(res, 403, "This account has been deactivated");
-      }
-
       const token = generateToken(user._id);
 
       return successResponse(

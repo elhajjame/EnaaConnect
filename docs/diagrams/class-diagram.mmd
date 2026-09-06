@@ -1,0 +1,208 @@
+%% EnaaConnect - Domain Class Diagram
+%% Version 2.0 - aligned with EnaaConnect SRS
+
+classDiagram
+direction TB
+
+class Role {
+  <<enumeration>>
+  STUDENT
+  ADMIN
+}
+
+class EventStatus {
+  <<enumeration>>
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+class PostType {
+  <<enumeration>>
+  STANDARD
+  QUESTION
+  ANNOUNCEMENT
+}
+
+class ReportStatus {
+  <<enumeration>>
+  PENDING
+  RESOLVED
+  DISMISSED
+}
+
+class User {
+  -id: ObjectId
+  -fullName: String
+  -email: String
+  -passwordHash: String
+  -role: Role
+  -profilePicture: String
+  -biography: String
+  -fieldOfStudy: String
+  -academicYear: String
+  -interests: String[]
+  -isVerified: Boolean
+  -createdAt: Date
+  -updatedAt: Date
+  +updateProfile(data): User
+}
+
+class Post {
+  -id: ObjectId
+  -author: ObjectId
+  -club: ObjectId?
+  -type: PostType
+  -content: String
+  -images: String[]
+  -likes: ObjectId[]
+  -createdAt: Date
+  -updatedAt: Date
+  +addLike(userId): void
+  +removeLike(userId): void
+}
+
+class Comment {
+  -id: ObjectId
+  -post: ObjectId
+  -author: ObjectId
+  -content: String
+  -createdAt: Date
+  -updatedAt: Date
+}
+
+class Event {
+  -id: ObjectId
+  -organizer: ObjectId
+  -title: String
+  -description: String
+  -dateTime: Date
+  -location: String
+  -category: String
+  -capacity: Number
+  -participants: ObjectId[]
+  -status: EventStatus
+  -reviewedBy: ObjectId?
+  -reviewedAt: Date?
+  -createdAt: Date
+  -updatedAt: Date
+  +hasCapacity(): Boolean
+  +addParticipant(userId): void
+  +removeParticipant(userId): void
+}
+
+class EventComment {
+  -id: ObjectId
+  -event: ObjectId
+  -author: ObjectId
+  -content: String
+  -createdAt: Date
+  -updatedAt: Date
+}
+
+class Club {
+  -id: ObjectId
+  -name: String
+  -description: String
+  -logo: String
+  -leader: ObjectId
+  -members: ObjectId[]
+  -createdAt: Date
+  -updatedAt: Date
+  +addMember(userId): void
+  +removeMember(userId): void
+  +changeLeader(userId): void
+}
+
+class Conversation {
+  -id: ObjectId
+  -participants: ObjectId[]
+  -isGroup: Boolean
+  -groupName: String?
+  -createdBy: ObjectId
+  -createdAt: Date
+  -updatedAt: Date
+  +addParticipant(userId): void
+  +removeParticipant(userId): void
+}
+
+class Message {
+  -id: ObjectId
+  -conversation: ObjectId
+  -sender: ObjectId
+  -content: String
+  -attachments: String[]
+  -readBy: ObjectId[]
+  -createdAt: Date
+  +markAsRead(userId): void
+}
+
+class Trip {
+  -id: ObjectId
+  -organizer: ObjectId
+  -conversation: ObjectId
+  -title: String
+  -description: String
+  -destination: String
+  -tripDate: Date
+  -budget: Number
+  -capacity: Number
+  -participants: ObjectId[]
+  -createdAt: Date
+  -updatedAt: Date
+  +hasCapacity(): Boolean
+  +addParticipant(userId): void
+  +removeParticipant(userId): void
+}
+
+class Notification {
+  -id: ObjectId
+  -recipient: ObjectId
+  -actor: ObjectId?
+  -type: String
+  -message: String
+  -relatedEntityType: String
+  -relatedEntity: ObjectId
+  -isRead: Boolean
+  -createdAt: Date
+  +markAsRead(): void
+}
+
+class Report {
+  -id: ObjectId
+  -reporter: ObjectId
+  -targetType: String
+  -targetId: ObjectId
+  -reason: String
+  -status: ReportStatus
+  -reviewedBy: ObjectId?
+  -createdAt: Date
+  -updatedAt: Date
+  +resolve(adminId): void
+  +dismiss(adminId): void
+}
+
+User "1" --> "0..*" Post : authors
+Post "1" *-- "0..*" Comment : has
+User "1" --> "0..*" Comment : writes
+
+User "1" --> "0..*" Event : organizes
+User "0..*" -- "0..*" Event : joins
+Event "1" *-- "0..*" EventComment : has
+User "1" --> "0..*" EventComment : writes
+
+User "1" --> "0..*" Club : leads
+User "0..*" -- "0..*" Club : joins
+Club "0..1" --> "0..*" Post : publishes announcements
+
+User "0..*" -- "0..*" Conversation : participates in
+Conversation "1" *-- "0..*" Message : contains
+User "1" --> "0..*" Message : sends
+
+User "1" --> "0..*" Trip : organizes
+User "0..*" -- "0..*" Trip : joins
+Trip "1" --> "1" Conversation : uses participant chat
+
+User "1" --> "0..*" Notification : receives
+User "1" --> "0..*" Report : submits
