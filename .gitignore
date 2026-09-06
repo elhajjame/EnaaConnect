@@ -1,9 +1,9 @@
 AGENTS.md
 EnaaConnect.md
-  node_modules/
-  .env
-  *.env
-  dist/
-  build/
-  coverage/
-  *.log
+node_modules/
+.env
+*.env
+dist/
+build/
+coverage/
+*.log
