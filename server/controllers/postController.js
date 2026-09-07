@@ -59,3 +59,31 @@ export const getPosts = async (req, res) => {
     return handleControllerError(res, error);
   }
 };
+
+export const updatePost = async (req, res) => {
+  try {
+    const post = req.post;
+
+    post.content = req.body.content;
+    await post.save();
+
+    const postData = {
+      id: post._id,
+      content: post.content,
+      image: post.image,
+      author: {
+        id: req.user._id,
+        fullName: req.user.fullName,
+        profilePicture: req.user.profilePicture,
+        fieldOfStudy: req.user.fieldOfStudy,
+      },
+      likesCount: post.likes.length,
+      commentsCount: post.comments.length,
+      createdAt: post.createdAt,
+    };
+
+    return successResponse(res, 200, postData, "Post updated successfully");
+  } catch (error) {
+    return handleControllerError(res, error);
+  }
+};
