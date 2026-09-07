@@ -87,3 +87,22 @@ export const updatePost = async (req, res) => {
     return handleControllerError(res, error);
   }
 };
+
+  export const deletePost = async (req, res) => {
+    try {
+      const post = req.post;
+
+      await post.deleteOne();
+
+      return successResponse(
+        res,
+        200,
+        {
+          id: post._id,
+        },
+        "Post deleted successfully",
+      );
+    } catch (error) {
+      return handleControllerError(res, error);
+    }
+  };

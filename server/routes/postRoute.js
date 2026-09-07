@@ -1,6 +1,15 @@
 import { Router } from "express";
-import { createPost, getPosts, updatePost } from "../controllers/postController.js";
-import { validateCreatePost, validatePostParams, validateUpdatePost } from "../middleware/postMiddleware.js";
+import {
+  createPost,
+  deletePost,
+  getPosts,
+  updatePost,
+} from "../controllers/postController.js";
+import {
+  validateCreatePost,
+  validatePostParams,
+  validateUpdatePost,
+} from "../middleware/postMiddleware.js";
 import protect from "../middleware/protectMiddleware.js";
 import { requireStudent } from "../middleware/roleMiddleware.js";
 import { PostOwnership } from "../middleware/postOwnershipMiddleware.js";
@@ -17,6 +26,14 @@ route.patch(
   validateUpdatePost,
   PostOwnership,
   updatePost,
+);
+route.delete(
+  "/:postId",
+  protect,
+  requireStudent,
+  validatePostParams,
+  PostOwnership,
+  deletePost,
 );
 
 export default route;
