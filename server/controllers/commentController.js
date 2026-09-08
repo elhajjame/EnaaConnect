@@ -55,7 +55,7 @@ export const getComments = async (req, res) => {
 
     const comments = await Comment.find({ post: post._id })
       .sort({ createdAt: 1 })
-      .populate("author", "fullName profilePicture");
+      .populate("author", "fullName profilePicture fieldOfStudy");
 
     const commentData = comments.map((comment) => {
       return {
@@ -67,6 +67,7 @@ export const getComments = async (req, res) => {
               id: comment.author._id,
               fullName: comment.author.fullName,
               profilePicture: comment.author.profilePicture,
+              fieldOfStudy: comment.author.fieldOfStudy,
             }
           : null,
         createdAt: comment.createdAt,
@@ -83,6 +84,6 @@ export const getComments = async (req, res) => {
       "Comments retrieved successfully",
     );
   } catch (error) {
-    handleControllerError(res, error);
+    return handleControllerError(res, error);
   }
 };
