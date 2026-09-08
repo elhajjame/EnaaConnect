@@ -1,45 +1,45 @@
 import mongoose from "mongoose";
 
-  const postSchema = new mongoose.Schema(
-    {
-      author: {
+const postSchema = new mongoose.Schema(
+  {
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "Post author is required"],
+    },
+
+    content: {
+      type: String,
+      required: [true, "Post content is required"],
+      trim: true,
+      minlength: [1, "Post content cannot be empty"],
+      maxlength: [2000, "Post content cannot exceed 2000 characters"],
+    },
+
+    image: {
+      type: String,
+      default: "",
+    },
+
+    likes: [
+      {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: [true, "Post author is required"],
       },
+    ],
 
-      content: {
-        type: String,
-        required: [true, "Post content is required"],
-        trim: true,
-        minlength: [1, "Post content cannot be empty"],
-        maxlength: [2000, "Post content cannot exceed 2000 characters"],
+    comments: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment",
       },
+    ],
+  },
+  {
+    timestamps: true,
+  },
+);
 
-      image: {
-        type: String,
-        default: "",
-      },
+const Post = mongoose.model("Post", postSchema);
 
-      likes: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
-      ],
-
-      comments: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Comment",
-        },
-      ],
-    },
-    {
-      timestamps: true,
-    },
-  );
-
-  const Post = mongoose.model("Post", postSchema);
-
-  export default Post;
+export default Post;
