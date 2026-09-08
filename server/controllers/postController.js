@@ -1,5 +1,5 @@
 import Post from "../models/PostModel.js";
-import { successResponse } from "../responses/response.js";
+import { errorResponse, successResponse } from "../responses/response.js";
 import handleControllerError from "../utils/handleControllerError.js";
 
 export const createPost = async (req, res) => {
@@ -88,21 +88,64 @@ export const updatePost = async (req, res) => {
   }
 };
 
-  export const deletePost = async (req, res) => {
-    try {
-      const post = req.post;
+export const deletePost = async (req, res) => {
+  try {
+    const post = req.post;
 
-      await post.deleteOne();
+    await post.deleteOne();
 
-      return successResponse(
-        res,
-        200,
-        {
-          id: post._id,
-        },
-        "Post deleted successfully",
-      );
-    } catch (error) {
-      return handleControllerError(res, error);
+    return successResponse(
+      res,
+      200,
+      {
+        id: post._id,
+      },
+      "Post deleted successfully",
+    );
+  } catch (error) {
+    return handleControllerError(res, error);
+  }
+};
+
+export const togglePostLike = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.postId);
+
+    if (!post) {
+      return errorResponse(res, 404, "Post not found");
     }
-  };
+
+    const likeIndex = post.likes.findIndex((userId) => {
+      return userId.equals(req.user._id);
+    });
+
+    let liked;
+
+    if (likeIndex === -1) {
+      post.likes.push(req.user._id);
+      liked = true;
+    } else {
+      post.likes.splice(likeIndex, 1);
+      liked = false;
+    }
+
+    await post.save();
+
+    const message = liked
+      ? "Post liked successfully"
+      : "Post Unlike successfully";
+
+    return successResponse(
+      res,
+      200,
+      {
+        postId: post._id,
+        liked,
+        likesCount: post.likes.length,
+      },
+      message,
+    );
+  } catch (error) {
+    return handleControllerError(res, error);
+  }
+};

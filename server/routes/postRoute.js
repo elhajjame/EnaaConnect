@@ -3,6 +3,7 @@ import {
   createPost,
   deletePost,
   getPosts,
+  togglePostLike,
   updatePost,
 } from "../controllers/postController.js";
 import {
@@ -36,4 +37,11 @@ route.delete(
   deletePost,
 );
 
+route.patch(
+  "/:postId/like",
+  protect,
+  requireStudent,
+  validatePostParams,
+  togglePostLike,
+);
 export default route;
