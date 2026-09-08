@@ -7,6 +7,7 @@ import {
   updatePost,
 } from "../controllers/postController.js";
 import {
+  validateCreateComment,
   validateCreatePost,
   validatePostParams,
   validateUpdatePost,
@@ -14,6 +15,7 @@ import {
 import protect from "../middleware/protectMiddleware.js";
 import { requireStudent } from "../middleware/roleMiddleware.js";
 import { PostOwnership } from "../middleware/postOwnershipMiddleware.js";
+import { createComment, getComments } from "../controllers/commentController.js";
 
 const route = Router();
 
@@ -44,4 +46,15 @@ route.patch(
   validatePostParams,
   togglePostLike,
 );
+
+route.post(
+  "/:postId/comments",
+  protect,
+  requireStudent,
+  validatePostParams,
+  validateCreateComment,
+  createComment,
+);
+
+route.get("/:postId/comments", protect, validatePostParams, getComments);
 export default route;

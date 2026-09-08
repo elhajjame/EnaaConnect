@@ -1,3 +1,4 @@
+import Comment from "../models/CommentModel.js";
 import Post from "../models/PostModel.js";
 import { errorResponse, successResponse } from "../responses/response.js";
 import handleControllerError from "../utils/handleControllerError.js";
@@ -92,6 +93,7 @@ export const deletePost = async (req, res) => {
   try {
     const post = req.post;
 
+    await Comment.deleteMany({ post: post._id });
     await post.deleteOne();
 
     return successResponse(
@@ -133,7 +135,7 @@ export const togglePostLike = async (req, res) => {
 
     const message = liked
       ? "Post liked successfully"
-      : "Post Unlike successfully";
+      : "Post unliked successfully";
 
     return successResponse(
       res,
