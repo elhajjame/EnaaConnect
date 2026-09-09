@@ -15,12 +15,25 @@ import {
 import protect from "../middleware/protectMiddleware.js";
 import { requireStudent } from "../middleware/roleMiddleware.js";
 import { PostOwnership } from "../middleware/postOwnershipMiddleware.js";
-import { createComment, getComments } from "../controllers/commentController.js";
+import {
+  createComment,
+  getComments,
+} from "../controllers/commentController.js";
+import { receivePostImages } from "../middleware/postImageMiddleware.js";
 
 const route = Router();
 
 route.get("/", protect, getPosts);
-route.post("/", protect, requireStudent, validateCreatePost, createPost);
+
+route.post(
+  "/",
+  protect,
+  requireStudent,
+  receivePostImages,
+  validateCreatePost,
+  createPost,
+);
+
 route.patch(
   "/:postId",
   protect,
@@ -30,6 +43,7 @@ route.patch(
   PostOwnership,
   updatePost,
 );
+
 route.delete(
   "/:postId",
   protect,

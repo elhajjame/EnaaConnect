@@ -3,7 +3,7 @@ import { v2 as cloudinary } from "cloudinary";
 const configureCloudinary = () => {
   const { CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } =
     process.env;
-    
+
   if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
     throw new Error("Cloudinary environment variables are missing");
   }
@@ -32,6 +32,30 @@ export const uploadProfilePicToCloudinary = (fileBuffer, userId) => {
           return reject(error);
         }
 
+        if (!result?.secure_url) {
+          return reject(new Error("Cloudinary did not return an image URL"));
+        }
+        resolve(result);
+      },
+    );
+    uploadStream.end(fileBuffer);
+  });
+};
+
+export const uploadPostImageToCloudinary = (fileBuffer) => {
+  configureCloudinary();
+
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        resource_type: "image",
+        folder: "enaa-connect/posts",
+      },
+
+      (error, result) => {
+        if (error) {
+          return reject(error);
+        }
         if (!result?.secure_url) {
           return reject(new Error("Cloudinary did not return an image URL"));
         }

@@ -16,9 +16,13 @@ const postSchema = new mongoose.Schema(
       maxlength: [2000, "Post content cannot exceed 2000 characters"],
     },
 
-    image: {
-      type: String,
-      default: "",
+    images: {
+      type: [String],
+      default: [],
+      validate: {
+        validator: (images) => images.length <= 5,
+        message: "A post cannot contain more than 5 images",
+      },
     },
 
     likes: [
