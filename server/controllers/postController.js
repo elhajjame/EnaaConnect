@@ -2,18 +2,35 @@ import Comment from "../models/CommentModel.js";
 import Post from "../models/PostModel.js";
 import { errorResponse, successResponse } from "../responses/response.js";
 import handleControllerError from "../utils/handleControllerError.js";
+import { uploadPostImageToCloudinary } from "../utils/cloudinary.js";
 
 export const createPost = async (req, res) => {
   try {
+    // const post = await Post.create({
+    //   author: req.user._id,
+    //   content: req.body.content,
+    // });
+
+    const imageUrls = [];
+
+    if (req.files?.length) {
+      for (const file of req.files) {
+        const uploadResult = await uploadPostImageToCloudinary(file.buffer);
+
+        imageUrls.push(uploadResult.secure_url);
+      }
+    }
+
     const post = await Post.create({
       author: req.user._id,
       content: req.body.content,
+      images: imageUrls,
     });
 
     const postData = {
       id: post._id,
       content: post.content,
-      image: post.image,
+      images: post.images,
       author: {
         id: req.user._id,
         fullName: req.user.fullName,
@@ -41,7 +58,7 @@ export const getPosts = async (req, res) => {
       return {
         id: post._id,
         content: post.content,
-        image: post.image,
+        images: post.images,
         author: post.author
           ? {
               id: post.author._id,
@@ -71,7 +88,7 @@ export const updatePost = async (req, res) => {
     const postData = {
       id: post._id,
       content: post.content,
-      image: post.image,
+      images: post.images,
       author: {
         id: req.user._id,
         fullName: req.user.fullName,
