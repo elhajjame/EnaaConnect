@@ -41,3 +41,42 @@ export const createEvent = async (req, res) => {
     return handleControllerError(res, error);
   }
 };
+
+export const reviewEvent = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.eventId);
+
+    if (!event) {
+      return errorResponse(res, 404, "Event not found");
+    }
+
+    if (event.status !== "pending") {
+      return errorResponse(res, 409, "Only pending events can be reviewed");
+    }
+
+    event.status = req.body.status;
+    event.reviewedBy = req.user._id;
+    event.reviewedAt = new Date();
+
+    await event.save();
+
+    const eventData = {
+      id: event._id,
+      title: event.title,
+      status: event.status,
+      organizer: event.organizer,
+      reviewedBy: event.reviewedBy,
+      reviewedAt: event.reviewedAt,
+      updatedAt: event.updatedAt,
+    };
+
+    const message =
+      event.status === "approved"
+        ? "Event approved successfully"
+        : "Event rejected successfully";
+
+    return successResponse(res, 200, eventData, message);
+  } catch (error) {
+    return handleControllerError(res, error);
+  }
+};
