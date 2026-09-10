@@ -121,3 +121,49 @@ export const getApprovedEvents = async (req, res) => {
     return handleControllerError(res, error);
   }
 };
+
+export const joinEvent = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.eventId);
+
+    if (!event) {
+      return errorResponse(res, 404, "Event not found");
+    }
+
+    let alreadyJoined = false;
+
+    for (const participantId of event.participants) {
+      if (participantId.equals(req.user._id)) {
+        alreadyJoined = true;
+        break;
+      }
+    }
+
+    if (alreadyJoined) {
+      return errorResponse(res, 409, "You have already joined this event");
+    }
+
+    if (event.participants.length >= event.maximumParticipants) {
+      return errorResponse(res, 409, "Event has reached its maximum capacity");
+    }
+
+    event.participants.push(req.user._id);
+    await event.save();
+
+    const participantsCount = event.participants.length;
+    const placesLeft = event.maximumParticipants - participantsCount;
+
+    const eventData = {
+      eventId: event._id,
+      joined: true,
+      participantsCount,
+      maximumParticipants: event.maximumParticipants,
+      placesLeft,
+      isFull: placesLeft === 0,
+    };
+
+    successResponse(res, 200, eventData, "Event joined successfully");
+  } catch (error) {
+    return handleControllerError(res, error);
+  }
+};
