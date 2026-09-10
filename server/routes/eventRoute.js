@@ -3,6 +3,7 @@ import {
   createEvent,
   getApprovedEvents,
   joinEvent,
+  leaveEvent,
   reviewEvent,
 } from "../controllers/eventController.js";
 import protect from "../middleware/protectMiddleware.js";
@@ -24,6 +25,7 @@ route.post(
   validateEventParams,
   joinEvent,
 );
+
 route.patch(
   "/:eventId/review",
   protect,
@@ -31,5 +33,13 @@ route.patch(
   validateEventParams,
   validateReviewEvent,
   reviewEvent,
+);
+
+route.delete(
+  "/:eventId/join",
+  protect,
+  requireStudent,
+  validateEventParams,
+  leaveEvent,
 );
 export default route;

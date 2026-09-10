@@ -162,7 +162,51 @@ export const joinEvent = async (req, res) => {
       isFull: placesLeft === 0,
     };
 
-    successResponse(res, 200, eventData, "Event joined successfully");
+    return successResponse(res, 200, eventData, "Event joined successfully");
+  } catch (error) {
+    return handleControllerError(res, error);
+  }
+};
+
+export const leaveEvent = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.eventId);
+
+    if (!event) {
+      return errorResponse(res, 404, "Event not found");
+    }
+
+    let participantIndex = -1;
+    console.log("this id", req.user._id);
+    for (let index = 0; index < event.participants.length; index++) {
+      const participantId = event.participants[index];
+
+      if (participantId.equals(req.user._id)) {
+        participantIndex = index;
+        break;
+      }
+    }
+    console.log("index", participantIndex);
+    if (participantIndex === -1) {
+      return errorResponse(res, 409, "You have not joined this event");
+    }
+
+    event.participants.splice(participantIndex, 1);
+    await event.save();
+
+    const participantsCount = event.participants.length;
+    const placesLeft = event.maximumParticipants - participantsCount;
+
+    const eventData = {
+      eventId: event._id,
+      joined: false,
+      participantsCount,
+      maximumParticipants: event.maximumParticipants,
+      placesLeft,
+      isFull: placesLeft === 0,
+    };
+
+    return successResponse(res, 200, eventData, "Event left successfully");
   } catch (error) {
     return handleControllerError(res, error);
   }
