@@ -1,5 +1,9 @@
 import { Router } from "express";
-import { createEvent, reviewEvent } from "../controllers/eventController.js";
+import {
+  createEvent,
+  getApprovedEvents,
+  reviewEvent,
+} from "../controllers/eventController.js";
 import protect from "../middleware/protectMiddleware.js";
 import { requireAdmin, requireStudent } from "../middleware/roleMiddleware.js";
 import {
@@ -10,6 +14,7 @@ import {
 
 const route = Router();
 
+route.get("/", protect, getApprovedEvents);
 route.post("/", protect, requireStudent, validateCreateEvent, createEvent);
 route.patch(
   "/:eventId/review",

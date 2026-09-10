@@ -80,3 +80,44 @@ export const reviewEvent = async (req, res) => {
     return handleControllerError(res, error);
   }
 };
+
+export const getApprovedEvents = async (req, res) => {
+  try {
+    const events = await Event.find({ status: "approved" })
+      .sort({ date: 1, time: 1 })
+      .populate("organizer", "fullName profilePicture fieldOfStudy");
+
+    const eventData = events.map((event) => {
+      return {
+        id: event._id,
+        title: event.title,
+        description: event.description,
+        date: event.date.toISOString().slice(0, 10),
+        time: event.time,
+        location: event.location,
+        category: event.category,
+        maximumParticipants: event.maximumParticipants,
+        participantsCount: event.participants.length,
+        status: event.status,
+        organizer: event.organizer
+          ? {
+              id: event.organizer._id,
+              fullName: event.organizer.fullName,
+              profilePicture: event.organizer.profilePicture,
+              fieldOfStudy: event.organizer.fieldOfStudy,
+            }
+          : null,
+        createdAt: event.createdAt,
+      };
+    });
+
+    return successResponse(
+      res,
+      200,
+      eventData,
+      "Approved events retrieved successfully",
+    );
+  } catch (error) {
+    return handleControllerError(res, error);
+  }
+};
