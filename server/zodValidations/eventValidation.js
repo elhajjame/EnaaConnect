@@ -74,3 +74,20 @@ export const createEventSchema = z
       });
     }
   });
+
+export const eventParamsSchema = z
+  .object({
+    eventId: z
+      .string()
+      .trim()
+      .regex(/^[0-9a-fA-F]{24}$/, "Invalid event ID"),
+  })
+  .strict();
+
+export const reviewEventSchema = z
+  .object({
+    status: z.enum(["approved", "rejected"], {
+      message: "Status must be approved or rejected",
+    }),
+  })
+  .strict();

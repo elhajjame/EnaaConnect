@@ -1,5 +1,5 @@
 import Event from "../models/EventModel.js";
-import { successResponse } from "../responses/response.js";
+import { errorResponse, successResponse } from "../responses/response.js";
 import handleControllerError from "../utils/handleControllerError.js";
 
 export const createEvent = async (req, res) => {
