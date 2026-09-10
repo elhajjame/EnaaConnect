@@ -3,7 +3,10 @@ import morgan from "morgan";
 import authRoute from "./routes/userRoute.js";
 import profileRoute from "./routes/profileRoute.js";
 import postRoute from "./routes/postRoute.js";
+import eventRoute from "./routes/eventRoute.js";
+
 const app = express();
+
 app.use(express.json());
 
 app.use(morgan("dev"));
@@ -11,6 +14,7 @@ app.use(morgan("dev"));
 app.use("/api/auth", authRoute);
 app.use("/api/users", profileRoute);
 app.use("/api/posts", postRoute);
+app.use("/api/events", eventRoute);
 
 app.get("/", (req, res) => {
   res.send("api is working");
