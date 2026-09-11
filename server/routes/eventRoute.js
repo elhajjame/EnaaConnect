@@ -17,6 +17,7 @@ import {
 } from "../middleware/eventMiddleware.js";
 
 const route = Router();
+route.post("/", protect, requireStudent, validateCreateEvent, createEvent);
 
 route.get("/", protect, getApprovedEvents);
 

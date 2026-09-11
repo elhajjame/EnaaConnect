@@ -1,4 +1,3 @@
-import { id } from "zod/v4/locales";
 import Event from "../models/EventModel.js";
 import { errorResponse, successResponse } from "../responses/response.js";
 import handleControllerError from "../utils/handleControllerError.js";
@@ -178,7 +177,7 @@ export const leaveEvent = async (req, res) => {
     }
 
     let participantIndex = -1;
-    console.log("this id", req.user._id);
+
     for (let index = 0; index < event.participants.length; index++) {
       const participantId = event.participants[index];
 
@@ -187,7 +186,7 @@ export const leaveEvent = async (req, res) => {
         break;
       }
     }
-    console.log("index", participantIndex);
+
     if (participantIndex === -1) {
       return errorResponse(res, 409, "You have not joined this event");
     }
@@ -260,10 +259,6 @@ export const getPendingEvents = async (req, res) => {
         createdAt: 1,
       })
       .populate("organizer", "fullName profilePicture fieldOfStudy");
-
-    if (!events) {
-      return errorResponse(res, 404);
-    }
 
     const eventData = [];
 
