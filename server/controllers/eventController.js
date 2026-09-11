@@ -211,3 +211,43 @@ export const leaveEvent = async (req, res) => {
     return handleControllerError(res, error);
   }
 };
+
+export const getEventParticipants = async (req, res) => {
+  try {
+    const event = await Event.findOne({
+      _id: req.params.eventId,
+      status: "approved",
+    }).populate("participants", "fullName profilePicture fieldOfStudy");
+
+    if (!event) {
+      return errorResponse(res, 404, "Event not found");
+    }
+
+    const participants = [];
+
+    for (const participant of event.participants) {
+      participants.push({
+        id: participant._id,
+        fullName: participant.fullName,
+        profilePicture: participant.profilePicture,
+        fieldOfStudy: participant.fieldOfStudy,
+      });
+    }
+
+    const eventData = {
+      eventId: event._id,
+      title: event.title,
+      participantsCount: participants.length,
+      participants,
+    };
+
+    return successResponse(
+      res,
+      200,
+      eventData,
+      '"Event participants retrieved successfully"',
+    );
+  } catch (error) {
+    return handleControllerError(res, error);
+  }
+};

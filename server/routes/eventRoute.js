@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   createEvent,
   getApprovedEvents,
+  getEventParticipants,
   joinEvent,
   leaveEvent,
   reviewEvent,
@@ -17,7 +18,15 @@ import {
 const route = Router();
 
 route.get("/", protect, getApprovedEvents);
-route.post("/", protect, requireStudent, validateCreateEvent, createEvent);
+
+route.get(
+  "/:eventId/participants",
+  protect,
+  requireStudent,
+  validateEventParams,
+  getEventParticipants,
+);
+
 route.post(
   "/:eventId/join",
   protect,
