@@ -3,6 +3,7 @@ import {
   createEvent,
   getApprovedEvents,
   getEventParticipants,
+  getPendingEvents,
   joinEvent,
   leaveEvent,
   reviewEvent,
@@ -26,6 +27,8 @@ route.get(
   validateEventParams,
   getEventParticipants,
 );
+
+route.get("/pending", protect, requireAdmin, getPendingEvents);
 
 route.post(
   "/:eventId/join",
