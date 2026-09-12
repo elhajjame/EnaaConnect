@@ -2,6 +2,8 @@ import { Router } from "express";
 import {
   createEvent,
   getApprovedEvents,
+  getEventParticipants,
+  getPendingEvents,
   joinEvent,
   leaveEvent,
   reviewEvent,
@@ -15,9 +17,20 @@ import {
 } from "../middleware/eventMiddleware.js";
 
 const route = Router();
+route.post("/", protect, requireStudent, validateCreateEvent, createEvent);
 
 route.get("/", protect, getApprovedEvents);
-route.post("/", protect, requireStudent, validateCreateEvent, createEvent);
+
+route.get(
+  "/:eventId/participants",
+  protect,
+  requireStudent,
+  validateEventParams,
+  getEventParticipants,
+);
+
+route.get("/pending", protect, requireAdmin, getPendingEvents);
+
 route.post(
   "/:eventId/join",
   protect,

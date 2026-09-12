@@ -177,7 +177,7 @@ export const leaveEvent = async (req, res) => {
     }
 
     let participantIndex = -1;
-    console.log("this id", req.user._id);
+
     for (let index = 0; index < event.participants.length; index++) {
       const participantId = event.participants[index];
 
@@ -186,7 +186,7 @@ export const leaveEvent = async (req, res) => {
         break;
       }
     }
-    console.log("index", participantIndex);
+
     if (participantIndex === -1) {
       return errorResponse(res, 409, "You have not joined this event");
     }
@@ -207,6 +207,91 @@ export const leaveEvent = async (req, res) => {
     };
 
     return successResponse(res, 200, eventData, "Event left successfully");
+  } catch (error) {
+    return handleControllerError(res, error);
+  }
+};
+
+export const getEventParticipants = async (req, res) => {
+  try {
+    const event = await Event.findOne({
+      _id: req.params.eventId,
+      status: "approved",
+    }).populate("participants", "fullName profilePicture fieldOfStudy");
+
+    if (!event) {
+      return errorResponse(res, 404, "Event not found");
+    }
+
+    const participants = [];
+
+    for (const participant of event.participants) {
+      participants.push({
+        id: participant._id,
+        fullName: participant.fullName,
+        profilePicture: participant.profilePicture,
+        fieldOfStudy: participant.fieldOfStudy,
+      });
+    }
+
+    const eventData = {
+      eventId: event._id,
+      title: event.title,
+      participantsCount: participants.length,
+      participants,
+    };
+
+    return successResponse(
+      res,
+      200,
+      eventData,
+      '"Event participants retrieved successfully"',
+    );
+  } catch (error) {
+    return handleControllerError(res, error);
+  }
+};
+
+export const getPendingEvents = async (req, res) => {
+  try {
+    const events = await Event.find({ status: "pending" })
+      .sort({
+        createdAt: 1,
+      })
+      .populate("organizer", "fullName profilePicture fieldOfStudy");
+
+    const eventData = [];
+
+    for (const event of events) {
+      eventData.push({
+        id: event._id,
+        title: event.title,
+        description: event.description,
+        date: event.date.toISOString().slice(0, 10),
+        time: event.time,
+        location: event.location,
+        category: event.category,
+        maximumParticipants: event.maximumParticipants,
+        participantsCount: event.participants.length,
+        status: event.status,
+        organizer: event.organizer
+          ? {
+              id: event.organizer._id,
+              fullName: event.organizer.fullName,
+              profilePicture: event.organizer.profilePicture,
+              fieldOfStudy: event.organizer.fieldOfStudy,
+            }
+          : null,
+        createdAt: event.createdAt,
+      });
+    }
+
+    return successResponse(
+      res,
+      200,
+      eventData,
+      "Pending events retrieved successfully",
+    );
   } catch (error) {
     return handleControllerError(res, error);
   }
