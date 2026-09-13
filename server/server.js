@@ -8,7 +8,7 @@ import authenticateSocket from "./middleware/socketAuthMiddleware.js";
 
 const port = process.env.PORT || 3000;
 
-const clientUrl = process.env.CLIENT_URL
+const clientUrl = process.env.CLIENT_URL;
 
 const httpServer = createServer(app);
 
@@ -25,13 +25,22 @@ const io = new Server(httpServer, {
 //here i took all the socket methos and store it inside express under the name io
 app.set("io", io);
 
+const joinUserRoom = (socket) => {
+  const userRoom = `user:${socket.user._id.toString()}`;
+
+  socket.join(userRoom);
+
+  return userRoom;
+};
 //socket is an object represent on client active connection it automaticly creates by socket.io
 // internal engine so when a user connected socket.io pass the connection object to the callback function as a argement
 
 io.use(authenticateSocket);
 io.on("connection", (socket) => {
+  const userRoom = joinUserRoom(socket);
   console.log(`socket connected ${socket.id}`);
-
+  console.log(`socket joined room: ${userRoom}`);
+  
   socket.on("disconnect", (reason) => {
     console.log(`socket disconnected: ${socket.id} Reason: ${reason}`);
   });

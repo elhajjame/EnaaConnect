@@ -15,9 +15,9 @@ const authenticateSocket = async (socket, next) => {
       return next(new Error("Authentication required"));
     }
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("decoded", decoded);
+
     const user = await User.findById(decoded.id);
-    console.log("user", user);
+
     if (!user) {
       return next(new Error("User no longer exists"));
     }
