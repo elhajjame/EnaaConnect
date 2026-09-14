@@ -1,5 +1,5 @@
 import Notification from "../models/NotificationModel.js";
-import { successResponse } from "../responses/response.js";
+import { errorResponse, successResponse } from "../responses/response.js";
 import handleControllerError from "../utils/handleControllerError.js";
 
 export const getMyNotifications = async (req, res) => {
@@ -42,6 +42,37 @@ export const getMyNotifications = async (req, res) => {
         unreadCount,
       },
       "Notifications retrieved successfully",
+    );
+  } catch (error) {
+    return handleControllerError(res, error);
+  }
+};
+
+export const markNotificationAsRead = async (req, res) => {
+  try {
+    const notification = await Notification.findOneAndUpdate(
+      {
+        _id: req.params.notificationId,
+        recipient: req.user._id,
+      },
+      {
+        isRead: true,
+      },
+      { new: true },
+    );
+
+    if (!notification) {
+      return errorResponse(res, 404, "Notification not found");
+    }
+
+    return successResponse(
+      res,
+      200,
+      {
+        id: notification._id,
+        isRead: notification.isRead,
+      },
+      "Notification marked as read",
     );
   } catch (error) {
     return handleControllerError(res, error);
