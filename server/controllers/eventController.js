@@ -1,5 +1,6 @@
 import Event from "../models/EventModel.js";
 import { errorResponse, successResponse } from "../responses/response.js";
+import { createNotification } from "../utils/createNotification.js";
 import handleControllerError from "../utils/handleControllerError.js";
 
 export const createEvent = async (req, res) => {
@@ -124,7 +125,10 @@ export const getApprovedEvents = async (req, res) => {
 
 export const joinEvent = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.eventId);
+    const event = await Event.findOne({
+      _id: req.params.eventId,
+      status: "approved",
+    });
 
     if (!event) {
       return errorResponse(res, 404, "Event not found");
@@ -149,6 +153,24 @@ export const joinEvent = async (req, res) => {
 
     event.participants.push(req.user._id);
     await event.save();
+
+    const io = req.app.get("io");
+
+    try {
+      await createNotification(io, {
+        recipient: event.organizer,
+        actor: req.user._id,
+        type: "event_join",
+        message: `${req.user.fullName} joined your event`,
+        relatedEntityType: "event",
+        relatedEntity: event._id,
+      });
+    } catch (notificationError) {
+      console.error(
+        "Failed to create event-join notification:",
+        notificationError,
+      );
+    }
 
     const participantsCount = event.participants.length;
     const placesLeft = event.maximumParticipants - participantsCount;
