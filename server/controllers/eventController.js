@@ -61,6 +61,27 @@ export const reviewEvent = async (req, res) => {
 
     await event.save();
 
+    const io = req.app.get("io");
+
+    try {
+      await createNotification(io, {
+        recipient: event.organizer,
+        actor: req.user._id,
+        type: event.status === "approved" ? "event_approved" : "event_rejected",
+        message:
+          event.status === "approved"
+            ? `Your event "${event.title}" was approved`
+            : `Your event "${event.title}" was rejected`,
+        relatedEntityType: "event",
+        relatedEntity: event._id,
+      });
+    } catch (notificationError) {
+      console.error(
+        "Failed to create event-review notification:",
+        notificationError,
+      );
+    }
+
     const eventData = {
       id: event._id,
       title: event.title,
