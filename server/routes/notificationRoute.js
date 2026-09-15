@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   getMyNotifications,
+  markAllNotificationsAsRead,
   markNotificationAsRead,
 } from "../controllers/notificationController.js";
 import protect from "../middleware/protectMiddleware.js";
@@ -15,4 +16,6 @@ route.patch(
   validateNotificationParams,
   markNotificationAsRead,
 );
+
+route.patch("/read-all", protect, markAllNotificationsAsRead);
 export default route;

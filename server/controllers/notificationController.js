@@ -78,3 +78,23 @@ export const markNotificationAsRead = async (req, res) => {
     return handleControllerError(res, error);
   }
 };
+
+export const markAllNotificationsAsRead = async (req, res) => {
+  try {
+    const result = await Notification.updateMany(
+      { recipient: req.user._id, isRead: false },
+      { $set: { isRead: true } },
+    );
+
+    return successResponse(
+      res,
+      200,
+      {
+        updatedCount: result.modifiedCount,
+      },
+      "All notifications marked as read",
+    );
+  } catch (error) {
+    return handleControllerError(res, error);
+  }
+};
