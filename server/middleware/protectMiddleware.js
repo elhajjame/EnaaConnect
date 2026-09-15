@@ -34,6 +34,15 @@ export const protect = async (req, res, next) => {
       "The user belonging to this token no longer exists",
     );
   }
+
+  if (freshUser.changedPasswordAfter(decoded.iat)) {
+    return errorResponse(
+      res,
+      401,
+      "Your password was recently changed. Please log in again",
+    );
+  }
+
   req.user = freshUser;
   next();
 };
