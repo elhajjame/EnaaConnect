@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {
-  forgetPassword,
+  forgotPassword,
   getMe,
   login,
   logOut,
@@ -22,7 +22,7 @@ route.post("/register", validateRegister, register);
 route.post("/login", validateLogin, login);
 route.post("/logout", protect, logOut);
 
-route.post("/forget-password", validateForgetPassword, forgetPassword);
+route.post("/forgot-password", validateForgetPassword, forgotPassword);
 route.patch(
   "/reset-password/:token",
   validateResetPasswordToken,

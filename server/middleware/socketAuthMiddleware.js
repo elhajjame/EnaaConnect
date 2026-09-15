@@ -10,7 +10,7 @@ const authenticateSocket = async (socket, next) => {
     if (!token && authorizationHeader?.startsWith("Bearer ")) {
       token = authorizationHeader.split(" ")[1];
     }
-    console.log("token", token);
+
     if (!token) {
       return next(new Error("Authentication required"));
     }
@@ -20,6 +20,12 @@ const authenticateSocket = async (socket, next) => {
 
     if (!user) {
       return next(new Error("User no longer exists"));
+    }
+
+    if (user.changedPasswordAfter(decoded.iat)) {
+      return next(
+        new Error("Password was recently changed. Please log in again"),
+      );
     }
 
     socket.user = user;

@@ -94,16 +94,15 @@ export const login = async (req, res) => {
   }
 };
 
-export const forgetPassword = async (req, res) => {
+export const forgotPassword = async (req, res) => {
   try {
+    const responseMessage =
+      "If an account exists for this email, a password reset link has been sent";
+
     // 1) get the user based on POSTed email
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
-      return errorResponse(
-        res,
-        404,
-        "There is no user with this email address",
-      );
+      return successResponse(res, 200, {}, responseMessage);
     }
 
     // 2) generate the random reset token
@@ -111,17 +110,17 @@ export const forgetPassword = async (req, res) => {
     await user.save({ validateBeforeSave: false });
 
     // 3) send the token to user email
-    const resetURL = `${req.protocol}://${req.get("host")}/api/auth/reset-password/${resetToken}`;
+    const resetURL = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
     const message = `You requested to reset your password. Please click the link below to create a new password: ${resetURL} If you did not request a password reset, please ignore this email. Your password will remain unchanged. This link is valid for a limited time.`;
 
     try {
       await sendEmail({
         email: user.email,
-        subject: "subject: ENAA Connect - Password Reset (valid for 1 hour)",
+        subject: "ENAA Connect - Password Reset (valid for 1 hour)",
         message,
       });
 
-      return successResponse(res, 200, {}, "Token sent to email");
+      return successResponse(res, 200, {}, responseMessage);
     } catch (error) {
       console.error("EMAIL ERROR:", error);
 
