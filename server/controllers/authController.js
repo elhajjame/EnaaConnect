@@ -3,6 +3,7 @@ import User from "../models/UserModel.js";
 import crypto from "crypto";
 import { sendEmail } from "../utils/email.js";
 import { errorResponse, successResponse } from "../responses/response.js";
+import handleControllerError from "../utils/handleControllerError.js";
 
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -10,158 +11,88 @@ const generateToken = (userId) => {
   });
 };
 
-// const handleControllerError = (res, error) => {
-//   console.error(error);
+export const register = async (req, res) => {
+  try {
+    const { fullName, email, password, confirmPassword } = req.body;
 
-//   if (error.code === 11000) {
-//     return errorResponse(res, 409, "An account with this email already exists");
-//   }
+    const existingUser = await User.findOne({ email });
 
-//   if (error.name === "ValidationError") {
-//     const message = Object.values(error.errors)
-//       .map((validationError) => validationError.message)
-//       .join(", ");
-
-//     return errorResponse(res, 400, message);
-//   }
-
-//   return errorResponse(res, 500, "Internal server error");
-// };
-
-  export const register = async (req, res) => {
-    try {
-      const { fullName, email, password, confirmPassword } = req.body;
-
-      if (!fullName || !email || !password || !confirmPassword) {
-        return errorResponse(
-          res,
-          400,
-          "Full name, email, password, and password confirmation are required",
-        );
-      }
-
-      if (fullName.trim().length < 3) {
-        return errorResponse(
-          res,
-          400,
-          "Full name must contain at least 3 characters",
-        );
-      }
-
-      if (password.length < 8) {
-        return errorResponse(
-          res,
-          400,
-          "Password must contain at least 8 characters",
-        );
-      }
-
-      if (password !== confirmPassword) {
-        return errorResponse(res, 400, "Passwords do not match");
-      }
-
-      const existingUser = await User.findOne({ email });
-
-      if (existingUser) {
-        return errorResponse(
-          res,
-          409,
-          "An account with this email already exists",
-        );
-      }
-
-      const newUser = await User.create({
-        fullName,
-        email,
-        password,
-        confirmPassword,
-        role: "student",
-      });
-
-      const token = generateToken(newUser._id);
-
-      return successResponse(
+    if (existingUser) {
+      return errorResponse(
         res,
-        201,
-        {
-          token,
-          user: {
-            id: newUser._id,
-            fullName: newUser.fullName,
-            email: newUser.email,
-            role: newUser.role,
-          },
-        },
-        "Account created successfully",
+        409,
+        "An account with this email already exists",
       );
-    } catch (error) {
-      console.error(error);
-
-      // if (error.code === 11000) {
-      //   return errorResponse(
-      //     res,
-      //     409,
-      //     "An account with this email already exists",
-      //   );
-      // }
-
-      // if (error.name === "ValidationError") {
-      //   return errorResponse(res, 400, "Invalid registration information");
-      // }
-
-      return errorResponse(res, 500, "Internal server error");
     }
-  };
 
+    const newUser = await User.create({
+      fullName,
+      email,
+      password,
+      confirmPassword,
+      role: "student",
+    });
 
- export const login = async (req, res) => {
-    try {
-      const { email, password } = req.body;
+    const token = generateToken(newUser._id);
 
-      if (!email || !password) {
-        return errorResponse(res, 400, "Email and password are required");
-      }
-
-      const normalizedEmail = email.trim().toLowerCase();
-
-      const user = await User.findOne({
-        email: normalizedEmail,
-      }).select("+password");
-
-      if (!user) {
-        return errorResponse(res, 401, "Incorrect email or password");
-      }
-
-      const passwordIsCorrect = await user.comparePassword(
-        password,
-        user.password,
-      );
-
-      if (!passwordIsCorrect) {
-        return errorResponse(res, 401, "Incorrect email or password");
-      }
-
-      const token = generateToken(user._id);
-
-      return successResponse(
-        res,
-        200,
-        {
-          token,
-          user: {
-            id: user._id,
-            fullName: user.fullName,
-            email: user.email,
-            role: user.role,
-          },
+    return successResponse(
+      res,
+      201,
+      {
+        token,
+        user: {
+          id: newUser._id,
+          fullName: newUser.fullName,
+          email: newUser.email,
+          role: newUser.role,
         },
-        "Login successful",
-      );
-    } catch (error) {
-      console.error(error);
-      return errorResponse(res, 500, "Internal server error");
+      },
+      "Account created successfully",
+    );
+  } catch (error) {
+    return handleControllerError(res, error);
+  }
+};
+
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email }).select("+password");
+
+    if (!user) {
+      return errorResponse(res, 401, "Incorrect email or password");
     }
-  };
+
+    const passwordIsCorrect = await user.comparePassword(
+      password,
+      user.password,
+    );
+
+    if (!passwordIsCorrect) {
+      return errorResponse(res, 401, "Incorrect email or password");
+    }
+
+    const token = generateToken(user._id);
+
+    return successResponse(
+      res,
+      200,
+      {
+        token,
+        user: {
+          id: user._id,
+          fullName: user.fullName,
+          email: user.email,
+          role: user.role,
+        },
+      },
+      "Login successful",
+    );
+  } catch (error) {
+    return handleControllerError(res, error);
+  }
+};
 
 export const forgetPassword = async (req, res) => {
   try {
@@ -205,8 +136,7 @@ export const forgetPassword = async (req, res) => {
       );
     }
   } catch (error) {
-    console.error(error);
-    errorResponse(res, 500, "Internal server error");
+    return handleControllerError(res, error);
   }
 };
 
@@ -239,9 +169,12 @@ export const resetPassword = async (req, res) => {
     const token = generateToken(user._id);
     return successResponse(res, 200, { token }, "Password reset successfully");
   } catch (error) {
-    console.error(error);
-    errorResponse(res, 500, "Internal server error");
+    return handleControllerError(res, error);
   }
+};
+
+export const logOut = (req, res) => {
+  return successResponse(res, 200, {}, "Logged out successfully");
 };
 
 export const getMe = (req, res) => {
@@ -270,7 +203,6 @@ export const getMe = (req, res) => {
 
     return successResponse(res, 200, safeUser, "User retrieved successfully");
   } catch (error) {
-    console.error(error);
-    return errorResponse(res, 500, "Internal server error");
+    return handleControllerError(res, error);
   }
 };
