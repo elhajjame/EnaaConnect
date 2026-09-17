@@ -1,4 +1,5 @@
 import { Outlet } from "react-router-dom";
+import MobileNavigation from "../components/MobileNavigation";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 
@@ -13,6 +14,8 @@ function MainLayout() {
           <Outlet />
         </main>
       </div>
+
+      <MobileNavigation />
     </div>
   );
 }

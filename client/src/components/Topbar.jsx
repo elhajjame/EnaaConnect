@@ -4,13 +4,13 @@ function Topbar() {
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-page/90 backdrop-blur-xl">
       <div className="flex h-20 items-center gap-3 px-4 sm:px-6 xl:px-9">
-        <button
-          type="button"
+        <a
+          href="#mobile-sidebar"
           className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-line bg-white text-brand-navy lg:hidden"
           aria-label="Open navigation menu"
         >
           <Menu className="h-5 w-5" aria-hidden="true" />
-        </button>
+        </a>
 
         <div className="hidden min-w-0 lg:block">
           <h1 className="truncate text-xl font-bold tracking-tight text-brand-navy-dark">
@@ -33,7 +33,7 @@ function Topbar() {
 
           <input
             type="search"
-            className="w-full rounded-2xl border border-line bg-white py-3 pl-11 pr-20 text-sm text-brand-navy-dark shadow-sm outline-none placeholder:text-slate-400 focus:border-brand-green focus:ring-4 focus:ring-brand-green/10"
+            className="w-full rounded-2xl border border-line bg-white py-3 pl-11 pr-20 text-sm text-brand-navy-dark shadow-sm placeholder:text-slate-400 focus:border-brand-green focus:ring-4 focus:ring-brand-green/10"
             placeholder="Search students, clubs, events..."
           />
         </label>
