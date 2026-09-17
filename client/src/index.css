@@ -1,26 +1,26 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Space+Grotesk:wght@500;600;700&display=swap");
 @import "tailwindcss";
 
 @theme {
-  /* Main colors from the UI reference */
-  --color-brand-navy: #173f6d;
-  --color-brand-navy-dark: #102f55;
-  --color-brand-lime: #c8ff4d;
-  --color-brand-green: #0d5c26;
-  --color-brand-green-dark: #08491d;
+  --color-brand-navy: #183862;
+  --color-brand-navy-dark: #142d4d;
+  --color-brand-lime: #c9f36a;
+  --color-brand-green: #11521c;
+  --color-brand-green-dark: #123f1b;
 
-  /* Page and content colors */
-  --color-page: #f3f6fa;
-  --color-ink: #102d50;
-  --color-muted: #71839c;
-  --color-line: #dce4ee;
+  --color-page: #f2f5f8;
+  --color-ink: #10211a;
+  --color-muted: #718096;
+  --color-line: #e2e8f0;
 
-  /* Shared typography */
-  --font-sans:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+  --font-sans: "DM Sans", sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
 
-  /* Shared card radius */
-  --radius-card: 1.5rem;
+  --radius-card: 1.65rem;
+
+  --shadow-card: 0 18px 45px rgba(24, 56, 98, 0.08);
+  --shadow-lift: 0 24px 60px rgba(17, 82, 28, 0.16);
 }
 
 :root {
@@ -81,6 +81,28 @@ img {
     linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
   background-size: 28px 28px;
+}
+
+.auth-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.light-grid {
+  background-image:
+    linear-gradient(rgba(24, 56, 98, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(24, 56, 98, 0.045) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.dot-field {
+  background-image: radial-gradient(
+    rgba(201, 243, 106, 0.48) 1.3px,
+    transparent 1.3px
+  );
+  background-size: 17px 17px;
 }
 
 .nav-link {
