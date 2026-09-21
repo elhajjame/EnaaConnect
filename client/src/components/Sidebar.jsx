@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import Logo from "./Logo";
+import useAuth from "../hooks/useAuth";
+import { useState } from "react";
 
 const workspaceLinks = [
   {
@@ -88,6 +90,23 @@ function SidebarLink({ item }) {
 }
 
 function Sidebar() {
+  const { logout } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  async function handleLogout() {
+    if (isLoggingOut) {
+      return;
+    }
+
+    setIsLoggingOut(true);
+
+    try {
+      await logout();
+    } catch {
+      setIsLoggingOut(false);
+    }
+  }
+
   return (
     <>
       <aside
@@ -144,10 +163,12 @@ function Sidebar() {
             </div>
 
             <button
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              aria-label={isLoggingOut ? "Signing out" : "Sign out"}
+              title={isLoggingOut ? "Signing out" : "Sign out"}
               type="button"
-              className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-white/40 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lime"
-              aria-label="Sign out"
-              title="Sign out"
+              className="cursor-pointer grid h-8 w-8 shrink-0 place-items-center rounded-lg text-white/40 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lime disabled:cursor-not-allowed disabled:opacity-50"
             >
               <LogOut className="h-4 w-4" aria-hidden="true" />
             </button>
