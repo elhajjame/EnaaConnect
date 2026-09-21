@@ -1,30 +1,6 @@
 import { BadgeCheck, Pencil } from "lucide-react";
 
-import profileAvatar from "../../assets/profile-avatar.png";
 import profileCover from "../../assets/profile-cover.png";
-
-const interests = [
-  {
-    name: "JavaScript",
-    className: "bg-brand-green/10 text-brand-green",
-  },
-  {
-    name: "React",
-    className: "bg-blue-50 text-blue-700",
-  },
-  {
-    name: "Node.js",
-    className: "bg-amber-50 text-amber-700",
-  },
-  {
-    name: "MongoDB",
-    className: "bg-violet-50 text-violet-700",
-  },
-  {
-    name: "UI Design",
-    className: "bg-slate-100 text-slate-600",
-  },
-];
 
 const activityStats = [
   { label: "Posts", value: "18" },
@@ -32,7 +8,8 @@ const activityStats = [
   { label: "Events", value: "11" },
 ];
 
-function ProfileInfo() {
+function ProfileInfo({ profile }) {
+  console.log(profile);
   return (
     <section className="overflow-hidden rounded-[2rem] border border-line bg-white shadow-card">
       <img
@@ -45,15 +22,15 @@ function ProfileInfo() {
         <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
             <img
-              src={profileAvatar}
-              alt="Mehdi El Hajjame"
+              src={profile.profilePicture}
+              alt={profile.fullName}
               className="h-28 w-28 shrink-0 rounded-[1.8rem] border-4 border-white object-cover shadow-card"
             />
 
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="font-display text-2xl font-bold text-brand-navy-dark">
-                  Mehdi El Hajjame
+                  {profile.fullName}
                 </h1>
 
                 <BadgeCheck
@@ -63,7 +40,7 @@ function ProfileInfo() {
               </div>
 
               <p className="mt-1 text-sm text-slate-500">
-                MERN class · 2026 promo
+                {profile.fieldOfStudy} · {profile.academicYear} promo
               </p>
             </div>
           </div>
@@ -84,9 +61,7 @@ function ProfileInfo() {
             </h2>
 
             <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
-              Junior full-stack developer focused on building simple, useful web
-              experiences. Currently learning React, Express, MongoDB, and
-              better ways to collaborate through Git.
+              {profile.biography}
             </p>
 
             <h2 className="mt-7 font-display text-lg font-bold text-brand-navy-dark">
@@ -94,7 +69,7 @@ function ProfileInfo() {
             </h2>
 
             <div className="mt-3 flex flex-wrap gap-2">
-              {interests.map((interest) => (
+              {profile.interests.map((interest) => (
                 <span
                   key={interest.name}
                   className={`rounded-xl px-3 py-2 text-xs font-bold ${interest.className}`}
