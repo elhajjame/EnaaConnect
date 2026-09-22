@@ -1,6 +1,9 @@
 import { ImagePlus, Upload, X } from "lucide-react";
 import { useState } from "react";
-import { updateProfile } from "../../services/profileService";
+import {
+  updateProfile,
+  updateProfilePicture,
+} from "../../services/profileService";
 import { getApiErrorMessage } from "../../services/api";
 
 function EditProfile({ onProfileUpdated, profile, isOpen, onClose }) {
@@ -12,7 +15,7 @@ function EditProfile({ onProfileUpdated, profile, isOpen, onClose }) {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
+  const [isUploadingPicture, setIsUploadingPicture] = useState(false);
   if (!isOpen) {
     return null;
   }
@@ -23,6 +26,29 @@ function EditProfile({ onProfileUpdated, profile, isOpen, onClose }) {
       ...currentData,
       [name]: value,
     }));
+  }
+
+  async function handleProfilePicture(e) {
+    const imageInput = e.target;
+    const imageFile = imageInput.files?.[0];
+
+    if (!imageFile || isUploadingPicture) {
+      return;
+    }
+
+    try {
+      setIsUploadingPicture(true);
+      setErrorMessage("");
+
+      const updateProfile = await updateProfilePicture(imageFile);
+
+      onProfileUpdated(updateProfile);
+    } catch (error) {
+      setErrorMessage(getApiErrorMessage(error));
+    } finally {
+      setIsUploadingPicture(false);
+      imageInput.value = "";
+    }
   }
 
   async function handleSubmit(e) {
@@ -102,7 +128,9 @@ function EditProfile({ onProfileUpdated, profile, isOpen, onClose }) {
                 Profile photo
               </p>
 
-              <p className="text-xs text-slate-500">JPG or PNG, up to 5 MB.</p>
+              <p className="text-xs text-slate-500">
+                JPG, PNG or WebP, up to 5 MB.
+              </p>
             </div>
 
             <label
@@ -110,14 +138,16 @@ function EditProfile({ onProfileUpdated, profile, isOpen, onClose }) {
               className="inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-xl border border-line bg-white px-3 py-2 text-xs font-bold text-brand-green shadow-sm hover:bg-[#eef8ef]"
             >
               <Upload className="h-4 w-4" aria-hidden="true" />
-              Upload Profile Photo
+              {isUploadingPicture ? "Uploading..." : "Upload Profile Photo"}
             </label>
 
             <input
+              onChange={handleProfilePicture}
+              disabled={isUploadingPicture}
               id="edit-profile-photo"
               name="profilePicture"
               type="file"
-              accept="image/jpeg,image/png"
+              accept="image/jpeg,image/png,image/webp"
               className="sr-only"
             />
           </div>
