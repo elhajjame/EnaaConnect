@@ -1,6 +1,6 @@
 import FeedPost from "./FeedPost";
 
-function FeedSection({ posts }) {
+function FeedSection({ posts = [] }) {
   return (
     <section aria-labelledby="feed-title">
       <div className="mb-4">
@@ -21,9 +21,26 @@ function FeedSection({ posts }) {
       </div>
 
       <div className="space-y-4">
-        {posts.map((post) => (
-          <FeedPost key={post.id} post={post} />
-        ))}
+        {posts.length === 0 ? (
+          <div
+            role="status"
+            className="rounded-card border border-line bg-white px-6 py-12 text-center shadow-card"
+          >
+            <p className="font-display text-lg font-bold text-brand-navy-dark">
+              No posts yet
+            </p>
+
+            <p className="mt-2 text-sm text-muted">
+              Be the first student to share something with the campus.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {posts.map((post) => (
+              <FeedPost key={post.id} post={post} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
