@@ -1,6 +1,10 @@
 import { Bell, Menu, Search } from "lucide-react";
+import useAuth from "../hooks/useAuth";
+import getInitials from "../utils/getInitials";
+  import { Link } from "react-router-dom";
 
 function Topbar() {
+  const { user } = useAuth();
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-page/90 backdrop-blur-xl">
       <div className="flex h-20 items-center gap-3 px-4 sm:px-6 xl:px-9">
@@ -59,13 +63,14 @@ function Topbar() {
           />
         </button>
 
-        <button
+        <Link
+          to='/profile'
           type="button"
           className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-brand-lime to-brand-green text-sm font-bold text-brand-navy-dark shadow-sm"
           aria-label="Open my profile"
         >
-          ME
-        </button>
+          {getInitials(user?.fullName)}
+        </Link>
       </div>
     </header>
   );

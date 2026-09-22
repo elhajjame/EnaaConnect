@@ -91,12 +91,13 @@ function RegisterPage() {
           className={inputClassName}
         />
       </AuthField>
-      <AuthField id="register-password" label="create password">
+      <AuthField id="register-password" label="Create password">
         <input
           value={formData.password}
           onChange={handleChange}
           type={showPassword ? "text" : "password"}
           autoComplete="new-password"
+          required
           minLength={8}
           maxLength={128}
           disabled={isSubmitting}
@@ -146,7 +147,7 @@ function RegisterPage() {
           aria-label={showConfirmPassword ? "Hide password" : "Show password"}
           aria-pressed={showConfirmPassword}
           disabled={isSubmitting}
-          className="absolute right-4 top-1/2 grid h-8 w-8-translate-y-1/2 place-items-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-brand-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green disabled:cursor-not-allowed disabled:opacity-60"
+          className="absolute right-4 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-brand-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green disabled:cursor-not-allowed disabled:opacity-60"
         >
           {showConfirmPassword ? (
             <EyeOff className="h-5 w-5" aria-hidden="true" />
@@ -167,7 +168,8 @@ function RegisterPage() {
 
       <button
         type="submit"
-        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-green px-5 py-3.5 text-base font-bold text-white shadow-[0_14px_30px_rgba(17,82,28,0.22)] transition hover:-translate-y-0.5 hover:bg-brand-green-dark focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-green/25"
+        disabled={isSubmitting}
+        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-green px-5 py-3.5 text-base font-bold text-white shadow-[0_14px_30px_rgba(17,82,28,0.22)] transition hover:-translate-y-0.5 hover:bg-brand-green-dark focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-green/25 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-70"
       >
         {isSubmitting ? "Creating account..." : "Create my profile"}
       </button>

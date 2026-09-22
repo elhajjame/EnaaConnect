@@ -9,8 +9,11 @@ import {
   UsersRound,
   X,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import Logo from "./Logo";
+import useAuth from "../hooks/useAuth";
+import { useState } from "react";
+import getInitials from "../utils/getInitials";
 
 const workspaceLinks = [
   {
@@ -88,6 +91,23 @@ function SidebarLink({ item }) {
 }
 
 function Sidebar() {
+  const { user, logout } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  async function handleLogout() {
+    if (isLoggingOut) {
+      return;
+    }
+
+    setIsLoggingOut(true);
+
+    try {
+      await logout();
+    } catch {
+      setIsLoggingOut(false);
+    }
+  }
+
   return (
     <>
       <aside
@@ -134,20 +154,27 @@ function Sidebar() {
 
         <div className="relative z-10 m-4 rounded-2xl border border-white/10 bg-white/[0.07] p-3.5 backdrop-blur">
           <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-brand-lime to-brand-green text-sm font-bold text-brand-navy-dark">
-              ME
-            </div>
+            <Link to='/profile' className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-brand-lime to-brand-green text-sm font-bold text-brand-navy-dark">
+              {getInitials(user?.fullName)}
+            </Link>
 
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-bold">Mehdi El Hajjame</p>
-              <p className="truncate text-xs text-white/45">MERN class</p>
+              <p className="truncate text-sm font-bold">
+                {" "}
+                {user?.fullName || "ENAA student"}
+              </p>
+              <p className="truncate text-xs text-white/45">
+                {user?.fieldOfStudy || "ENAA student"}
+              </p>
             </div>
 
             <button
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              aria-label={isLoggingOut ? "Signing out" : "Sign out"}
+              title={isLoggingOut ? "Signing out" : "Sign out"}
               type="button"
-              className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-white/40 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lime"
-              aria-label="Sign out"
-              title="Sign out"
+              className="cursor-pointer grid h-8 w-8 shrink-0 place-items-center rounded-lg text-white/40 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lime disabled:cursor-not-allowed disabled:opacity-50"
             >
               <LogOut className="h-4 w-4" aria-hidden="true" />
             </button>
