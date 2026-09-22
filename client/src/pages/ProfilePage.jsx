@@ -1,4 +1,4 @@
-import {useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ProfileInfo from "../components/profile/ProfileInfo";
 import ProfilePosts from "../components/profile/ProfilePosts";
 import useAuth from "../hooks/useAuth";
@@ -49,7 +49,7 @@ function ProfilePage() {
 
   return (
     <div className="space-y-6">
-      <ProfileInfo profile={profile} />
+      <ProfileInfo profile={profile} onProfileUpdated={setProfile} />
       <ProfilePosts />
     </div>
   );

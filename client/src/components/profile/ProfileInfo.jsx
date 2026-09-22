@@ -1,6 +1,8 @@
 import { BadgeCheck, Pencil } from "lucide-react";
 
 import profileCover from "../../assets/profile-cover.png";
+import { useState } from "react";
+import EditProfile from "./EditProfile";
 
 const activityStats = [
   { label: "Posts", value: "18" },
@@ -8,8 +10,9 @@ const activityStats = [
   { label: "Events", value: "11" },
 ];
 
-function ProfileInfo({ profile }) {
-  console.log(profile);
+function ProfileInfo({ profile, onProfileUpdated }) {
+  const [isEditOpen, setIsEditOpen] = useState(false);
+
   return (
     <section className="overflow-hidden rounded-[2rem] border border-line bg-white shadow-card">
       <img
@@ -46,6 +49,9 @@ function ProfileInfo({ profile }) {
           </div>
 
           <button
+            onClick={() => {
+              setIsEditOpen(true);
+            }}
             type="button"
             className="inline-flex w-fit items-center gap-2 rounded-xl border border-line px-4 py-2.5 text-sm font-bold text-brand-navy transition hover:bg-page focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green"
           >
@@ -71,10 +77,10 @@ function ProfileInfo({ profile }) {
             <div className="mt-3 flex flex-wrap gap-2">
               {profile.interests.map((interest) => (
                 <span
-                  key={interest.name}
-                  className={`rounded-xl px-3 py-2 text-xs font-bold ${interest.className}`}
+                  key={interest}
+                  className="rounded-xl bg-brand-green/10 px-3 py-2 text-xs font-bold text-brand-green"
                 >
-                  {interest.name}
+                  {interest}
                 </span>
               ))}
             </div>
@@ -101,6 +107,12 @@ function ProfileInfo({ profile }) {
           </aside>
         </div>
       </div>
+      <EditProfile
+        onProfileUpdated={onProfileUpdated}
+        profile={profile}
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+      />
     </section>
   );
 }
