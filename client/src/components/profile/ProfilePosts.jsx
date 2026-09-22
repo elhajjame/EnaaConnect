@@ -14,13 +14,10 @@ function ProfilePosts() {
             id="profile-posts-title"
             className="mt-1 font-display text-2xl font-bold text-brand-navy-dark"
           >
-            Posts by Mehdi
+            Posts by {}
           </h2>
         </div>
 
-        <span className="rounded-xl bg-white px-3 py-2 text-xs font-bold text-slate-500 shadow-sm">
-          18 posts
-        </span>
       </div>
 
       <div className="space-y-4">

@@ -40,9 +40,9 @@ function EditProfile({ onProfileUpdated, profile, isOpen, onClose }) {
       setIsUploadingPicture(true);
       setErrorMessage("");
 
-      const updateProfile = await updateProfilePicture(imageFile);
+      const updatedProfile = await updateProfilePicture(imageFile);
 
-      onProfileUpdated(updateProfile);
+      onProfileUpdated(updatedProfile);
     } catch (error) {
       setErrorMessage(getApiErrorMessage(error));
     } finally {

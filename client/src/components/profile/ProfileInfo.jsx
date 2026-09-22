@@ -3,6 +3,7 @@ import { BadgeCheck, Pencil } from "lucide-react";
 import profileCover from "../../assets/profile-cover.png";
 import { useState } from "react";
 import EditProfile from "./EditProfile";
+import ProfileAvatar from "./ProfileAvatar";
 
 const activityStats = [
   { label: "Posts", value: "18" },
@@ -24,12 +25,7 @@ function ProfileInfo({ profile, onProfileUpdated }) {
       <div className="px-5 pb-7 sm:px-8">
         <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-            <img
-              src={profile.profilePicture}
-              alt={profile.fullName}
-              className="h-28 w-28 shrink-0 rounded-[1.8rem] border-4 border-white object-cover shadow-card"
-            />
-
+            <ProfileAvatar profile={profile} />
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="font-display text-2xl font-bold text-brand-navy-dark">

@@ -6,10 +6,15 @@ import { getProfile } from "../services/profileService";
 import { getApiErrorMessage } from "../services/api";
 
 function ProfilePage() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+
+  function handleProfileUpdated(updatedProfile) {
+    setProfile(updatedProfile);
+    updateUser(updatedProfile);
+  }
 
   useEffect(() => {
     async function loadProfile() {
@@ -49,7 +54,7 @@ function ProfilePage() {
 
   return (
     <div className="space-y-6">
-      <ProfileInfo profile={profile} onProfileUpdated={setProfile} />
+      <ProfileInfo profile={profile} onProfileUpdated={handleProfileUpdated} />
       <ProfilePosts />
     </div>
   );
