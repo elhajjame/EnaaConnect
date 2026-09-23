@@ -10,18 +10,17 @@ const postSchema = new mongoose.Schema(
 
     content: {
       type: String,
-      required: [true, "Post content is required"],
       trim: true,
-      minlength: [1, "Post content cannot be empty"],
       maxlength: [2000, "Post content cannot exceed 2000 characters"],
+      default: "",
     },
 
     images: {
       type: [String],
       default: [],
       validate: {
-        validator: (images) => images.length <= 5,
-        message: "A post cannot contain more than 5 images",
+        validator: (images) => images.length <= 1,
+        message: "A post cannot contain more than 1 image",
       },
     },
 
