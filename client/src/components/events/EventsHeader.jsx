@@ -16,7 +16,7 @@ function EventsHeader({ onCreateEvent }) {
       <button
         type="button"
         onClick={onCreateEvent}
-        className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-xl bg-brand-green px-4 py-3 text-sm font-bold text-white shadow-lg shadow-brand-green/10 transition hover:bg-brand-green-dark focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-green/20"
+        className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-brand-green px-4 py-3 text-sm font-bold text-white shadow-lg shadow-brand-green/10 transition hover:bg-brand-green-dark focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-green/20 sm:w-fit"
       >
         <Plus className="h-4 w-4" aria-hidden="true" />
         Create event
