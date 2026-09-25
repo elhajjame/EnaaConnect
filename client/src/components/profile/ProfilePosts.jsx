@@ -17,7 +17,6 @@ function ProfilePosts() {
             Posts by {}
           </h2>
         </div>
-
       </div>
 
       <div className="space-y-4">

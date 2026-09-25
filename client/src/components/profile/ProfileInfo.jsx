@@ -5,15 +5,17 @@ import { useState } from "react";
 import EditProfile from "./EditProfile";
 import ProfileAvatar from "./ProfileAvatar";
 
-const activityStats = [
-  { label: "Posts", value: "18" },
-  { label: "Clubs", value: "04" },
-  { label: "Events", value: "11" },
-];
-
 function ProfileInfo({ profile, onProfileUpdated }) {
   const [isEditOpen, setIsEditOpen] = useState(false);
 
+  const isAdmin = profile.role === "admin";
+
+  const studentDetails = [
+    profile.fieldOfStudy,
+    profile.academicYear ? `${profile.academicYear} promo` : "",
+  ]
+    .filter(Boolean)
+    .join(" · ");
   return (
     <section className="overflow-hidden rounded-[2rem] border border-line bg-white shadow-card">
       <img
@@ -31,15 +33,13 @@ function ProfileInfo({ profile, onProfileUpdated }) {
                 <h1 className="font-display text-2xl font-bold text-brand-navy-dark">
                   {profile.fullName}
                 </h1>
-
-                <BadgeCheck
-                  className="h-5 w-5 text-brand-green"
-                  aria-label="Verified student"
-                />
+                {isAdmin && <BadgeCheck className="h-5 w-5 text-brand-green" />}
               </div>
 
               <p className="mt-1 text-sm text-slate-500">
-                {profile.fieldOfStudy} · {profile.academicYear} promo
+                {isAdmin
+                  ? "EnaaConnect administrator"
+                  : studentDetails || "ENAA student"}
               </p>
             </div>
           </div>
@@ -63,7 +63,10 @@ function ProfileInfo({ profile, onProfileUpdated }) {
             </h2>
 
             <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
-              {profile.biography}
+              {profile.biography ||
+                (isAdmin
+                  ? "EnaaConnect administrator helping manage and support the campus community."
+                  : "No biography has been added yet.")}
             </p>
 
             <h2 className="mt-7 font-display text-lg font-bold text-brand-navy-dark">
@@ -83,22 +86,18 @@ function ProfileInfo({ profile, onProfileUpdated }) {
           </div>
 
           <aside className="rounded-2xl bg-page p-5">
-            <p className="font-mono text-[10px] font-semibold uppercase tracking-wider text-brand-green">
+            {/* <p className="font-mono text-[10px] font-semibold uppercase tracking-wider text-brand-green">
               Community activity
-            </p>
+            </p> */}
 
-            <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-              {activityStats.map((stat) => (
-                <div key={stat.label} className="rounded-xl bg-white p-3">
-                  <strong className="font-display text-xl text-brand-navy-dark">
-                    {stat.value}
-                  </strong>
+            <div className="mt-4 rounded-xl bg-white p-4">
+              <span className="inline-flex rounded-full bg-brand-green/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-brand-green">
+                Coming soon
+              </span>
 
-                  <span className="mt-1 block text-[10px] text-slate-400">
-                    {stat.label}
-                  </span>
-                </div>
-              ))}
+              <p className="mt-3 text-sm leading-6 text-slate-500">
+                Community activity statistics will be available soon.
+              </p>
             </div>
           </aside>
         </div>
