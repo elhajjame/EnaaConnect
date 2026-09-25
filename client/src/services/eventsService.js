@@ -10,3 +10,23 @@ export async function getEvents() {
 
   return response.data.data;
 }
+
+export async function getPendingEvents() {
+  const response = await api.get("/events/pending");
+
+  return response.data.data;
+}
+
+export async function reviewEvent(eventId, status) {
+  const response = await api.patch(`/events/${eventId}/review`, {
+    status,
+  });
+
+  return response.data.data;
+}
+
+export async function joinEvent(eventId) {
+  const response = await api.post(`/events/${eventId}/join`);
+
+  return response.data.data;
+}

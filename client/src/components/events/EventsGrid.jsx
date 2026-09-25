@@ -1,8 +1,7 @@
 import { CalendarDays } from "lucide-react";
 import EventCard from "./EventCard";
 
-function EventsGrid({ events }) {
-  console.log(events);
+function EventsGrid({ events, onJoin, joiningEventId }) {
   if (events.length === 0) {
     return (
       <div
@@ -14,10 +13,7 @@ function EventsGrid({ events }) {
           aria-hidden="true"
         />
 
-        <h2
-          className="mt-4 font-display text-lg font-bold text-brand-
-          navy-dark sm:text-xl"
-        >
+        <h2 className="mt-4 font-display text-lg font-bold text-brand-navy-dark sm:text-xl">
           No events available
         </h2>
 
@@ -34,7 +30,12 @@ function EventsGrid({ events }) {
       aria-label="Campus events"
     >
       {events.map((event) => (
-        <EventCard key={event.id} event={event} />
+        <EventCard
+          key={event.id}
+          event={event}
+          onJoin={onJoin}
+          isJoining={joiningEventId === event.id}
+        />
       ))}
     </section>
   );

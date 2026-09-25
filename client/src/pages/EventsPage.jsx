@@ -3,7 +3,7 @@ import CreateEventForm from "../components/events/CreateEventForm";
 import EventsGrid from "../components/events/EventsGrid";
 import EventsHeader from "../components/events/EventsHeader";
 import { getApiErrorMessage } from "../services/api";
-import { getEvents } from "../services/eventsService";
+import { getEvents, joinEvent } from "../services/eventsService";
 
 function EventsPage() {
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
@@ -11,6 +11,38 @@ function EventsPage() {
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [joiningEventId, setJoiningEventId] = useState(null);
+  const [joinErrorMessage, setJoinErrorMessage] = useState("");
+
+  async function handleJoin(eventId) {
+    if (joiningEventId) {
+      return;
+    }
+
+    try {
+      setJoiningEventId(eventId);
+      setJoinErrorMessage("");
+
+      const joinedEvent = await joinEvent(eventId);
+
+      setEvents((currentEvents) =>
+        currentEvents.map((event) =>
+          event.id === eventId
+            ? {
+                ...event,
+                joined: joinedEvent.joined,
+                isFull: joinedEvent.isFull,
+                participantsCount: joinedEvent.participantsCount,
+              }
+            : event,
+        ),
+      );
+    } catch (error) {
+      setJoinErrorMessage(getApiErrorMessage(error));
+    } finally {
+      setJoiningEventId(null);
+    }
+  }
 
   useEffect(() => {
     async function loadEvents() {
@@ -74,7 +106,23 @@ function EventsPage() {
         </p>
       )}
 
-      {!isLoading && !errorMessage && <EventsGrid events={events} />}
+      {joinErrorMessage && (
+        <p
+          role="alert"
+          className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3
+      text-sm text-red-700"
+        >
+          {joinErrorMessage}
+        </p>
+      )}
+
+      {!isLoading && !errorMessage && (
+        <EventsGrid
+          events={events}
+          onJoin={handleJoin}
+          joiningEventId={joiningEventId}
+        />
+      )}
 
       <CreateEventForm
         onEventCreated={handleEventCreated}
