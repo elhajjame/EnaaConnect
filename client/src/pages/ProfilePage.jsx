@@ -59,7 +59,7 @@ function ProfilePage() {
   return (
     <div className="space-y-6">
       <ProfileInfo profile={profile} onProfileUpdated={handleProfileUpdated} />
-      <ProfilePosts />
+      <ProfilePosts userId={user?.id} profileNam={user?.fullName} />
     </div>
   );
 }
