@@ -1,15 +1,69 @@
 import { CalendarPlus, X } from "lucide-react";
+import { useState } from "react";
+import { createEvent } from "../../services/eventsService";
+import { getApiErrorMessage } from "../../services/api";
 
 const inputStyles =
   "mt-2 w-full rounded-xl border border-line bg-page px-4 py-3 text-sm text-brand-navy-dark outline-none transition placeholder:text-slate-400 focus:border-brand-green focus:ring-4 focus:ring-brand-green/10";
 
-function CreateEventForm({ isOpen, onClose }) {
-  function handleSubmit(event) {
-    event.preventDefault();
-  }
+function CreateEventForm({ onEventCreated, isOpen, onClose }) {
+  const [eventsData, setEventData] = useState({
+    title: "",
+    description: "",
+    date: "",
+    time: "",
+    location: "",
+    category: "",
+    maximumParticipants: "",
+  });
+
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) {
     return null;
+  }
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setEventData((currentData) => ({
+      ...currentData,
+      [name]: value,
+    }));
+  };
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      setErrorMessage("");
+
+      await createEvent({
+        ...eventsData,
+        maximumParticipants: Number(eventsData.maximumParticipants),
+      });
+
+      setEventData({
+        title: "",
+        description: "",
+        date: "",
+        time: "",
+        location: "",
+        category: "",
+        maximumParticipants: "",
+      });
+
+      onEventCreated();
+    } catch (error) {
+      setErrorMessage(getApiErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -58,6 +112,8 @@ function CreateEventForm({ isOpen, onClose }) {
             </label>
 
             <input
+              value={eventsData.title}
+              onChange={handleChange}
               id="event-title"
               name="title"
               type="text"
@@ -78,6 +134,8 @@ function CreateEventForm({ isOpen, onClose }) {
             </label>
 
             <textarea
+              value={eventsData.description}
+              onChange={handleChange}
               id="event-description"
               name="description"
               rows={4}
@@ -99,6 +157,8 @@ function CreateEventForm({ isOpen, onClose }) {
               </label>
 
               <input
+                value={eventsData.date}
+                onChange={handleChange}
                 id="event-date"
                 name="date"
                 type="date"
@@ -116,6 +176,8 @@ function CreateEventForm({ isOpen, onClose }) {
               </label>
 
               <input
+                value={eventsData.time}
+                onChange={handleChange}
                 id="event-time"
                 name="time"
                 type="time"
@@ -134,6 +196,8 @@ function CreateEventForm({ isOpen, onClose }) {
             </label>
 
             <input
+              value={eventsData.location}
+              onChange={handleChange}
               id="event-location"
               name="location"
               type="text"
@@ -155,9 +219,10 @@ function CreateEventForm({ isOpen, onClose }) {
               </label>
 
               <select
+                value={eventsData.category}
+                onChange={handleChange}
                 id="event-category"
                 name="category"
-                defaultValue=""
                 className={inputStyles}
                 required
               >
@@ -182,6 +247,8 @@ function CreateEventForm({ isOpen, onClose }) {
               </label>
 
               <input
+                value={eventsData.maximumParticipants}
+                onChange={handleChange}
                 id="event-maximum-participants"
                 name="maximumParticipants"
                 type="number"
@@ -194,11 +261,19 @@ function CreateEventForm({ isOpen, onClose }) {
               />
             </div>
           </div>
-
+          {errorMessage && (
+            <p
+              role="alert"
+              className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            >
+              {errorMessage}
+            </p>
+          )}
           <footer className="flex flex-col-reverse gap-3 border-t border-line pt-5 sm:flex-row sm:justify-end">
             <button
               type="button"
               onClick={onClose}
+              disabled={isSubmitting}
               className="rounded-xl border border-line px-5 py-2.5 text-sm font-bold text-muted transition hover:bg-page"
             >
               Cancel
@@ -206,10 +281,11 @@ function CreateEventForm({ isOpen, onClose }) {
 
             <button
               type="submit"
+              disabled={isSubmitting}
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-green px-5 py-2.5 text-sm font-bold text-white transition hover:bg-brand-green-dark"
             >
               <CalendarPlus className="h-4 w-4" aria-hidden="true" />
-              Create event
+              {isSubmitting ? "Creating..." : "Create event"}
             </button>
           </footer>
         </form>

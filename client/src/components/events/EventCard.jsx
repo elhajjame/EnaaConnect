@@ -8,6 +8,7 @@ import {
   Trophy,
   WandSparkles,
 } from "lucide-react";
+import useAuth from "../../hooks/useAuth";
 
 const categoryStyles = {
   education: {
@@ -59,10 +60,13 @@ const categoryStyles = {
   },
 };
 
-function EventCard({ event }) {
+function EventCard({ event, onJoin, onLeave, isJoining, isLeaving }) {
+  const { user } = useAuth();
   const style = categoryStyles[event.category] || categoryStyles.education;
   const DecorativeIcon = style.Icon;
 
+  const isFull =
+    event.isFull || event.participantsCount >= event.maximumParticipants;
   return (
     <article className="overflow-hidden rounded-[1.7rem] border border-slate-200 bg-white shadow-card">
       <div className={`relative h-44 p-5 text-white ${style.background}`}>
@@ -115,13 +119,30 @@ function EventCard({ event }) {
             {event.participantsCount} / {event.maximumParticipants} seats
           </p>
         </div>
-
-        <button
-          type="button"
-          className="mt-4 w-full cursor-pointer rounded-xl bg-brand-green py-2.5 text-sm font-bold text-white transition hover:bg-brand-green-dark focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-green/20"
-        >
-          Join event
-        </button>
+        {user?.role === "student" && (
+          <button
+            type="button"
+            onClick={() => {
+              if (event.joined) {
+                onLeave(event.id);
+              } else {
+                onJoin(event.id);
+              }
+            }}
+            disabled={isJoining || isLeaving || (!event.joined && isFull)}
+            className="mt-4 w-full cursor-pointer rounded-xl bg-brand-green py-2.5 text-sm font-bold text-white transition hover:bg-brand-green-dark focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-green/20 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isJoining
+              ? "Joining..."
+              : isLeaving
+                ? "Leaving..."
+                : event.joined
+                  ? "Leave event"
+                  : isFull
+                    ? "Event full"
+                    : "Join event"}
+          </button>
+        )}
       </div>
     </article>
   );

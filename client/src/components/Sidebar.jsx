@@ -25,8 +25,8 @@ const workspaceLinks = [
     label: "Events",
     path: "/events",
     icon: CalendarDays,
-    badge: "3",
-    badgeStyle: "bg-brand-lime text-brand-navy-dark",
+    // badge: "3",
+    // badgeStyle: "bg-brand-lime text-brand-navy-dark",
   },
   {
     label: "Clubs",
@@ -61,8 +61,7 @@ const personalLinks = [
     label: "Admin preview",
     path: "/admin",
     icon: ShieldCheck,
-    badge: "Soon",
-    badgeStyle: "bg-white/10 text-white/60",
+    adminOnly: true,
   },
 ];
 
@@ -93,6 +92,10 @@ function SidebarLink({ item }) {
 function Sidebar() {
   const { user, logout } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const visiblePersonalLinks = personalLinks.filter(
+    (item) => !item.adminOnly || user?.role === "admin",
+  );
 
   async function handleLogout() {
     if (isLoggingOut) {
@@ -146,7 +149,7 @@ function Sidebar() {
           </p>
 
           <div className="space-y-1">
-            {personalLinks.map((item) => (
+            {visiblePersonalLinks.map((item) => (
               <SidebarLink key={item.path} item={item} />
             ))}
           </div>
@@ -154,13 +157,15 @@ function Sidebar() {
 
         <div className="relative z-10 m-4 rounded-2xl border border-white/10 bg-white/[0.07] p-3.5 backdrop-blur">
           <div className="flex items-center gap-3">
-            <Link to='/profile' className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-brand-lime to-brand-green text-sm font-bold text-brand-navy-dark">
+            <Link
+              to="/profile"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-brand-lime to-brand-green text-sm font-bold text-brand-navy-dark"
+            >
               {getInitials(user?.fullName)}
             </Link>
 
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-bold">
-                {" "}
                 {user?.fullName || "ENAA student"}
               </p>
               <p className="truncate text-xs text-white/45">
