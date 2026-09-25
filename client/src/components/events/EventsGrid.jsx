@@ -1,7 +1,13 @@
 import { CalendarDays } from "lucide-react";
 import EventCard from "./EventCard";
 
-function EventsGrid({ events, onJoin, joiningEventId }) {
+function EventsGrid({
+  events,
+  onJoin,
+  onLeave,
+  leavingEventId,
+  joiningEventId,
+}) {
   if (events.length === 0) {
     return (
       <div
@@ -34,7 +40,9 @@ function EventsGrid({ events, onJoin, joiningEventId }) {
           key={event.id}
           event={event}
           onJoin={onJoin}
+          onLeave={onLeave}
           isJoining={joiningEventId === event.id}
+          isLeaving={leavingEventId === event.id}
         />
       ))}
     </section>

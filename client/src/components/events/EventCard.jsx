@@ -60,7 +60,7 @@ const categoryStyles = {
   },
 };
 
-function EventCard({ event, onJoin, isJoining }) {
+function EventCard({ event, onJoin, onLeave, isJoining, isLeaving }) {
   const { user } = useAuth();
   const style = categoryStyles[event.category] || categoryStyles.education;
   const DecorativeIcon = style.Icon;
@@ -122,17 +122,25 @@ function EventCard({ event, onJoin, isJoining }) {
         {user?.role === "student" && (
           <button
             type="button"
-            onClick={() => onJoin(event.id)}
-            disabled={isJoining || event.joined || isFull}
+            onClick={() => {
+              if (event.joined) {
+                onLeave(event.id);
+              } else {
+                onJoin(event.id);
+              }
+            }}
+            disabled={isJoining || isLeaving || (!event.joined && isFull)}
             className="mt-4 w-full cursor-pointer rounded-xl bg-brand-green py-2.5 text-sm font-bold text-white transition hover:bg-brand-green-dark focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-green/20 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isJoining
               ? "Joining..."
-              : event.joined
-                ? "Joined"
-                : isFull
-                  ? "Event full"
-                  : "Join event"}
+              : isLeaving
+                ? "Leaving..."
+                : event.joined
+                  ? "Leave event"
+                  : isFull
+                    ? "Event full"
+                    : "Join event"}
           </button>
         )}
       </div>

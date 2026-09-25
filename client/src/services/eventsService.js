@@ -30,3 +30,9 @@ export async function joinEvent(eventId) {
 
   return response.data.data;
 }
+
+export async function leaveEvent(eventId) {
+  const response = await api.delete(`/events/${eventId}/join`);
+
+  return response.data.data;
+}

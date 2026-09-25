@@ -25,8 +25,8 @@ const workspaceLinks = [
     label: "Events",
     path: "/events",
     icon: CalendarDays,
-    badge: "3",
-    badgeStyle: "bg-brand-lime text-brand-navy-dark",
+    // badge: "3",
+    // badgeStyle: "bg-brand-lime text-brand-navy-dark",
   },
   {
     label: "Clubs",

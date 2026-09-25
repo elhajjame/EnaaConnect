@@ -3,7 +3,7 @@ import CreateEventForm from "../components/events/CreateEventForm";
 import EventsGrid from "../components/events/EventsGrid";
 import EventsHeader from "../components/events/EventsHeader";
 import { getApiErrorMessage } from "../services/api";
-import { getEvents, joinEvent } from "../services/eventsService";
+import { getEvents, joinEvent, leaveEvent } from "../services/eventsService";
 
 function EventsPage() {
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
@@ -13,6 +13,7 @@ function EventsPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [joiningEventId, setJoiningEventId] = useState(null);
   const [joinErrorMessage, setJoinErrorMessage] = useState("");
+  const [leavingEventId, setLeavingEventId] = useState(null);
 
   async function handleJoin(eventId) {
     if (joiningEventId) {
@@ -41,6 +42,29 @@ function EventsPage() {
       setJoinErrorMessage(getApiErrorMessage(error));
     } finally {
       setJoiningEventId(null);
+    }
+  }
+
+  async function handleLeave(eventId) {
+    if (joiningEventId || leavingEventId) {
+      return;
+    }
+
+    try {
+      setLeavingEventId(eventId);
+      setJoinErrorMessage("");
+
+      const leftEvent = await leaveEvent(eventId);
+
+      setEvents((currentEvents) =>
+        currentEvents.map((event) =>
+          event.id === eventId ? { ...event, ...leftEvent } : event,
+        ),
+      );
+    } catch (error) {
+      setJoinErrorMessage(getApiErrorMessage(error));
+    } finally {
+      setLeavingEventId(null);
     }
   }
 
@@ -120,6 +144,8 @@ function EventsPage() {
         <EventsGrid
           events={events}
           onJoin={handleJoin}
+          onLeave={handleLeave}
+          leavingEventId={leavingEventId}
           joiningEventId={joiningEventId}
         />
       )}
