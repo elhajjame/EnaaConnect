@@ -187,12 +187,7 @@ function Sidebar() {
         </div>
       </aside>
 
-      <a
-        href="#"
-        className="sidebar-backdrop pointer-events-none fixed inset-0 z-[45] bg-brand-navy-dark/55 opacity-0 backdrop-blur-sm transition-opacity lg:hidden"
-        aria-label="Close navigation menu"
-        tabIndex={-1}
-      />
+    
     </>
   );
 }
