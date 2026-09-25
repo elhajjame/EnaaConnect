@@ -4,7 +4,7 @@ import ProfilePosts from "../components/profile/ProfilePosts";
 import useAuth from "../hooks/useAuth";
 import { getProfile } from "../services/profileService";
 import { getApiErrorMessage } from "../services/api";
-
+import { getCurrentUser } from "../context/AuthService";
 function ProfilePage() {
   const { user, updateUser } = useAuth();
   const [profile, setProfile] = useState(null);
@@ -25,7 +25,11 @@ function ProfilePage() {
       try {
         setErrorMessage("");
 
-        const profileData = await getProfile(user.id);
+        const profileData =
+          user.role === "admin"
+            ? await getCurrentUser()
+            : await getProfile(user.id);
+
         setProfile(profileData);
       } catch (error) {
         setErrorMessage(getApiErrorMessage(error));
@@ -34,7 +38,7 @@ function ProfilePage() {
       }
     }
     loadProfile();
-  }, [user?.id]);
+  }, [user?.id, user?.role]);
 
   if (isLoading) {
     return;
