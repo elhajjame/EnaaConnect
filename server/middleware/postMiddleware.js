@@ -13,6 +13,12 @@ export const validateCreatePost = (req, res, next) => {
     return errorResponse(res, 400, result.error.issues[0].message);
   }
 
+  const hasContent = Boolean(result.data.content);
+  const hasImage = Boolean(req.files?.length);
+
+  if (!hasContent && !hasImage) {
+    return errorResponse(res, 400, "Post must contain content or an image");
+  }
   req.body = result.data;
   next();
 };
