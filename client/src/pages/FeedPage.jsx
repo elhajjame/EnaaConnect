@@ -3,6 +3,7 @@ import CreatePostForm from "../components/feed/CreatePostForm";
 import FeedSection from "../components/feed/FeedSection";
 import { getPosts } from "../services/postService";
 import { getApiErrorMessage } from "../services/api";
+import PageLoader from "../components/loading/PageLoader";
 
 function FeedPage() {
   const [posts, setPosts] = useState([]);
@@ -34,7 +35,11 @@ function FeedPage() {
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1.58fr)_minmax(310px,0.72fr)]">
       <div className="min-w-0 space-y-6">
         <CreatePostForm onPostCreated={handlePostCreated} />
-
+        {isLoading && (
+          <div className="grid min-h-[60vh] place-items-center">
+            <PageLoader />
+          </div>
+        )}
         {errorMessage && (
           <p
             role="alert"

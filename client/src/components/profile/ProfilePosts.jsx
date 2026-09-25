@@ -2,6 +2,8 @@ import ProfilePostCard from "./ProfilePostCard";
 import { useEffect, useState } from "react";
 import { getApiErrorMessage } from "../../services/api";
 import { getPosts } from "../../services/postService";
+import PageLoader from "../loading/PageLoader";
+
 function ProfilePosts({ userId, profileName }) {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -50,9 +52,9 @@ function ProfilePosts({ userId, profileName }) {
       </div>
 
       {isLoading && (
-        <p className="rounded-card border border-line bg-white px-6 py-10 text-center text-sm text-slate-500 shadow-card">
-          Loading posts...
-        </p>
+        <div className="grid min-h-72 place-items-center">
+          <PageLoader />
+        </div>
       )}
 
       {errorMessage && (
