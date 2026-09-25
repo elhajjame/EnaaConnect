@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import CreateEventForm from "../components/events/CreateEventForm";
 import EventsGrid from "../components/events/EventsGrid";
 import EventsHeader from "../components/events/EventsHeader";
+import PageLoader from "../components/loading/PageLoader";
 import { getApiErrorMessage } from "../services/api";
 import { getEvents, joinEvent, leaveEvent } from "../services/eventsService";
 
@@ -125,9 +126,9 @@ function EventsPage() {
         </p>
       )}
       {isLoading && (
-        <p className="py-10 text-center text-sm text-muted">
-          Loading events...
-        </p>
+        <div className="grid min-h-[60vh] place-items-center">
+          <PageLoader />
+        </div>
       )}
 
       {joinErrorMessage && (
