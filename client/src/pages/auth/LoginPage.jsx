@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import { useState } from "react";
 import { getApiErrorMessage } from "../../services/api";
+import FullPageLoader from "../../components/loading/FullPageLoader";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -40,6 +41,9 @@ function LoginPage() {
     setShowPassword((currentValue) => !currentValue);
   }
 
+  if (isSubmitting) {
+    return <FullPageLoader />;
+  }
   return (
     <form
       onSubmit={handleSubmit}
