@@ -97,16 +97,6 @@
         select: false,
       },
 
-      passwordResetToken: {
-        type: String,
-        select: false,
-      },
-
-      passwordResetExpires: {
-        type: Date,
-        select: false,
-      },
-
       passwordChangedAt: Date,
     },
     {
@@ -161,19 +151,6 @@
     this.verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000;
 
     return verificationToken;
-  };
-
-  userSchema.methods.createPasswordResetToken = function () {
-    const resetToken = crypto.randomBytes(32).toString("hex");
-
-    this.passwordResetToken = crypto
-      .createHash("sha256")
-      .update(resetToken)
-      .digest("hex");
-
-    this.passwordResetExpires = Date.now() + 60 * 60 * 1000;
-
-    return resetToken;
   };
 
   const User = mongoose.model("User", userSchema);

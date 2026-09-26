@@ -69,14 +69,6 @@ function LoginPage() {
         id="login-password"
         label="Password"
         icon={LockKeyhole}
-        action={
-          <button
-            type="button"
-            className="rounded-md text-sm font-bold text-brand-green hover:text-brand-green-dark focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-green/20"
-          >
-            Forgot password?
-          </button>
-        }
       >
         <input
           value={password}
