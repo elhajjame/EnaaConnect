@@ -1,4 +1,4 @@
-import { Bell, Menu, Search } from "lucide-react";
+import { Bell, Search } from "lucide-react";
 import useAuth from "../hooks/useAuth";
 import getInitials from "../utils/getInitials";
   import { Link } from "react-router-dom";
@@ -8,14 +8,6 @@ function Topbar() {
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-page/90 backdrop-blur-xl">
       <div className="flex h-20 items-center gap-3 px-4 sm:px-6 xl:px-9">
-        <a
-          href="#mobile-sidebar"
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-line bg-white text-brand-navy lg:hidden"
-          aria-label="Open navigation menu"
-        >
-          <Menu className="h-5 w-5" aria-hidden="true" />
-        </a>
-
         <div className="hidden min-w-0 lg:block">
           <h1 className="truncate text-xl font-bold tracking-tight text-brand-navy-dark">
             Campus feed
