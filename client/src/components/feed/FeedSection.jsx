@@ -1,6 +1,6 @@
 import FeedPost from "./FeedPost";
 
-function FeedSection({ posts = [] }) {
+function FeedSection({ onLike, likingPostId, posts = [] }) {
   return (
     <section aria-labelledby="feed-title">
       <div className="mb-4">
@@ -37,7 +37,12 @@ function FeedSection({ posts = [] }) {
         ) : (
           <div className="space-y-4">
             {posts.map((post) => (
-              <FeedPost key={post.id} post={post} />
+              <FeedPost
+                onLike={onLike}
+                isLiking={likingPostId === post.id}
+                key={post.id}
+                post={post}
+              />
             ))}
           </div>
         )}

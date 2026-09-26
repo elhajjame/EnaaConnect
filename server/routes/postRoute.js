@@ -28,7 +28,6 @@ route.get("/", protect, getPosts);
 route.post(
   "/",
   protect,
-  requireStudent,
   receivePostImages,
   validateCreatePost,
   createPost,
@@ -47,24 +46,16 @@ route.patch(
 route.delete(
   "/:postId",
   protect,
-  requireStudent,
   validatePostParams,
   PostOwnership,
   deletePost,
 );
 
-route.patch(
-  "/:postId/like",
-  protect,
-  requireStudent,
-  validatePostParams,
-  togglePostLike,
-);
+route.patch("/:postId/like", protect, validatePostParams, togglePostLike);
 
 route.post(
   "/:postId/comments",
   protect,
-  requireStudent,
   validatePostParams,
   validateCreateComment,
   createComment,
