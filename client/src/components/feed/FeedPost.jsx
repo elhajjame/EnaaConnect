@@ -1,7 +1,7 @@
 import { Ellipsis, Heart, MessageCircle } from "lucide-react";
 import getInitials from "../../utils/getInitials";
 
-export default function FeedPost({ post }) {
+export default function FeedPost({ onLike, post }) {
   const authorName = post.author?.fullName || "Deleted user";
   const profilePicture = post.author?.profilePicture;
   const images = post.images || [];
@@ -54,22 +54,23 @@ export default function FeedPost({ post }) {
             hasMultipleImages ? "grid-cols-2" : "grid-cols-1"
           }`}
         >
-          {images.map((image, index) => (
+
             <img
-              key={`${post.id}-image-${index}`}
-              src={image}
-              alt={`Post attachment ${index + 1} by ${authorName}`}
+              key={`${post.id}}`}
+              src={post.images}
+              alt={`Post attachment ${post.id} by ${authorName}`}
               loading="lazy"
               className={`w-full rounded-2xl object-cover ${
                 hasMultipleImages ? "h-44 sm:h-56" : "h-60 sm:h-80"
               }`}
             />
-          ))}
+
         </div>
       )}
 
       <div className="mt-5 flex items-center gap-2 border-t border-line pt-4">
         <button
+          onClick={() => onLike(post.id)}
           type="button"
           className="cursor-pointer inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold text-slate-500 transition hover:bg-rose-50 hover:text-rose-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
         >

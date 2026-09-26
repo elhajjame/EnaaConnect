@@ -19,3 +19,9 @@ export async function createPost(content, image = null) {
 
   return response.data.data;
 }
+
+export async function togglePostLike(postId) {
+  const response = await api.patch(`/posts/${postId}/like`);
+
+  return response.data.data;
+}
