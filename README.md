@@ -1,185 +1,112 @@
-<div align="center">
-
 # EnaaConnect
 
-### A centralized digital community for ENAA students
+A campus community platform for ENAA students to share posts, maintain profiles, discover approved events, and participate in campus activities.
 
-Connect, collaborate, organize events, share knowledge, and stay informed through one student-focused platform.
-
-[Software Requirements Specification](./EnaaConnect_SRS.pdf) ·
-[Use Case Diagram](./docs/diagrams/use-case-diagram.mmd) ·
-[Class Diagram](./docs/diagrams/class-diagram.mmd)
-
-</div>
-
----
-
-## About EnaaConnect
-
-EnaaConnect is a full-stack web platform designed to improve communication and collaboration within the ENAA school community.
-
-Important announcements, student activities, events, and discussions are often spread across different platforms. EnaaConnect brings these interactions into one organized and accessible environment where students can share resources, discover events, manage their profiles, and follow campus activity.
-
-> EnaaConnect is under active development. The Software Requirements Specification describes the complete product vision, while the implementation-status section below describes what currently exists in this repository.
+> EnaaConnect is under active development. The SRS defines the target product; the implementation status below describes what currently exists in this repository.
 
 ## Documentation
 
-- [Software Requirements Specification (PDF)](./EnaaConnect_SRS.pdf)
-- [Use Case Diagram](./docs/diagrams/use-case-diagram.mmd)
-- [Class Diagram](./docs/diagrams/class-diagram.mmd)
+- [Software Requirements Specification (PDF)](./docs/Software%20Requirements%20fill%20rouge%20project.pdf)
+- [Use case diagram source](./docs/diagrams/use-case-diagram.mmd)
+- [Class diagram source](./docs/diagrams/class-diagram.mmd)
 
-The SRS covers the project context, requirements, user roles, user stories, database design, security requirements, technology choices, and development methodology.
+<details>
+<summary>View the use case diagram</summary>
 
-## Problem Statement
+![EnaaConnect use case diagram](./docs/diagrams/use-case-diagram.drawio.png)
 
-ENAA organizes activities throughout the academic year, but important information can be missed because communication is distributed across multiple platforms.
+</details>
 
-EnaaConnect addresses several problems:
+<details>
+<summary>View the class diagram</summary>
 
-- Announcements are scattered across different communication channels.
-- Students lack a centralized collaboration space.
-- Events can be difficult to organize and discover.
-- Student clubs have limited visibility.
-- Students have limited ways to find classmates with shared interests.
-- Community activity is difficult to follow consistently.
+![EnaaConnect class diagram](./docs/diagrams/class-diagram.drawio.png)
 
-## Project Objectives
+</details>
 
-- Improve communication between students.
-- Simplify event creation and participation.
-- Encourage academic collaboration.
-- Promote student activities and communities.
-- Improve access to campus information.
-- Increase student engagement.
-- Provide secure authentication and authorization.
-- Offer a responsive experience across common devices.
+The use case diagram distinguishes frontend-connected flows from API-only capabilities. The class diagram shows the five current Mongoose models: User, Post, Comment, Event, and Notification.
 
-## Implementation Status
+## Purpose and scope
 
-The SRS represents the planned product scope. This table reflects the functionality currently present in the repository.
+EnaaConnect provides one authenticated space for campus posts, profiles, events, and activity notifications. Students can participate in the community, while administrators review submitted events before publication.
 
-| Feature | Backend | Frontend | Status |
-|---|---:|---:|---|
-| Registration and login | Yes | In progress | Active development |
-| JWT session authentication | Yes | In progress | Active development |
-| Forgot/reset password | Yes | Not connected | Backend available |
-| Profile management | Yes | Reference UI available | Frontend pending |
-| Profile picture upload | Yes | Not connected | Backend available |
-| Student feed | Yes | Reference-based UI | API integration pending |
-| Post images, likes, and comments | Yes | Reference-based UI | API integration pending |
-| Event creation and participation | Yes | Reference UI available | API integration pending |
-| Administrator event review | Yes | Reference UI available | API integration pending |
-| Notifications | Yes | Reference UI available | API integration pending |
-| Real-time user connections | Partial | Not connected | Socket.IO foundation |
-| Clubs and communities | No | UI-only reference | Planned |
-| Private/group messaging | No | UI-only reference | Planned |
-| Trip planning | No | UI-only reference | Planned |
-| Global search | No | UI-only reference | Planned |
-| Full administration panel | Partial | UI-only reference | Planned |
+The current SRS covers:
 
-Features without backend support remain presentational until corresponding backend functionality is implemented.
+- Registration, login, current-user access, logout, and password reset by email
+- Profile editing, profile pictures, public profiles, and authored posts
+- Posts with text or one optional image, likes, and comments
+- Event submission, administrator review, approved-event discovery, and participation
+- Notifications for selected post and event actions
 
-## Core Features
+Clubs, private messaging, search, bookmarks, and a separate trip-planning module are outside the scope of the current SRS. `trips` remains an event category.
 
-### Authentication
+## Users and roles
 
-The backend currently supports student registration, secure login, JWT authentication, current-user retrieval, logout, forgot-password email, and password reset. Registration is restricted to valid `@enaa.ma` email addresses.
-
-### Profile Management
-
-Students can maintain their full name, field of study, academic year, profile picture, biography, and interests. Profile pictures are uploaded through Cloudinary.
-
-### Student Feed
-
-The feed backend supports creating and retrieving posts, editing and deleting owned posts, uploading images, toggling likes, and creating and retrieving comments.
-
-### Event Management
-
-Students can create events, view approved events, join or leave events, and view participants. Administrators can retrieve and review pending events.
-
-### Notifications
-
-Authenticated users can retrieve their notifications, mark one notification as read, or mark all notifications as read.
-
-### Planned SRS Features
-
-The complete SRS also includes clubs, private and group messaging, file sharing, trip planning, global search, content reporting, moderation, and extended administration functionality. These features are part of the product vision but are not fully implemented in the current backend.
-
-## User Roles
-
-### Currently implemented
-
-| Role | Current permissions |
+| Actor | Access |
 |---|---|
-| `student` | Manage a profile, create and interact with posts, create events, and join or leave events |
-| `admin` | Review pending events and access administrator-restricted operations |
+| Visitor | Register as a student and log in |
+| Student | Use protected content, manage their profile, create posts and events, and join or leave approved events |
+| Administrator | Use protected content and review pending events |
 
-The SRS also describes a club-leader role. This role is planned but is not currently included in the backend role enum.
+Registration creates a `student` account. The backend role enum contains `student` and `admin`; it does not provide public administrator registration.
 
-## Technology Stack
+The server enforces authentication, roles, and ownership. Hiding a control in the frontend does not replace a server permission check.
 
-### Frontend
+## Implementation status
 
-- React
-- JavaScript and JSX
-- Vite
-- React Router
-- Tailwind CSS
-- Axios
-- Lucide React
+| Area | Backend | Frontend |
+|---|---|---|
+| Registration, login, current user, and logout | Implemented | Connected |
+| Password reset by email | Required by SRS; not implemented | No connected flow |
+| Own profile editing and picture upload | Implemented | Connected |
+| Public profile by user ID | Implemented | No dedicated screen |
+| Feed, post creation, and likes | Implemented | Connected |
+| Post editing and deletion | Implemented | No connected controls |
+| Post comments | Implemented | No connected comment flow |
+| Approved events, submission, join, and leave | Implemented | Connected |
+| Administrator event review | Implemented | Connected |
+| Event participant list | Implemented | No connected screen |
+| Notifications and authenticated Socket.IO delivery | Implemented on server | No connected notification interface |
 
-### Backend
+The diagrams show the current implementation. They do not mean every API capability has a frontend screen.
 
-- Node.js and Express.js
-- MongoDB and Mongoose
-- JSON Web Tokens and bcrypt
-- Zod validation
-- Multer and Cloudinary
-- Socket.IO
-- Nodemailer
+## Technology stack
 
-### Design
+| Layer | Technologies |
+|---|---|
+| Frontend | React, JavaScript, Vite, React Router, Tailwind CSS, Axios, Lucide React |
+| Backend | Node.js ES modules, Express, Zod |
+| Database | MongoDB, Mongoose |
+| Authentication | JWT Bearer tokens, bcryptjs |
+| Images | Multer, Cloudinary |
+| Real-time events | Socket.IO |
+| Local backend deployment | Docker Compose with MongoDB |
 
-- Responsive reference-based interface
-- DM Sans body typography
-- Space Grotesk display typography
-- IBM Plex Mono technical accents
-- Lucide icon system
-- Shared Tailwind CSS design tokens
+The SRS specifies Nodemailer for password-reset email, but password-reset routes and email delivery are not implemented in the current backend.
 
-## Project Structure
+## Project structure
 
 ```text
 EnaaConnect/
-├── client/
-│   ├── public/
-│   └── src/
-│       ├── components/
-│       ├── context/
-│       ├── data/
-│       ├── layouts/
-│       ├── pages/
-│       └── services/
-├── server/
-│   ├── config/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── responses/
-│   ├── routes/
-│   ├── utils/
-│   └── zodValidations/
+├── .github/workflows/       # Current CI workflows
+├── client/                  # React and Vite frontend
+├── server/                  # Express API and auth tests
 ├── docs/
+│   ├── Software Requirements fill rouge project.pdf
 │   └── diagrams/
-├── EnaaConnect_SRS.pdf
+│       ├── use-case-diagram.mmd
+│       ├── use-case-diagram.drawio.png
+│       ├── class-diagram.mmd
+│       └── class-diagram.drawio.png
+├── docker-compose.yml
 └── README.md
 ```
 
-The local `ui-reference` directory is the visual source of truth during frontend development and is intentionally excluded from Git.
+The local `ui-reference` directory guides frontend appearance and is excluded from Git.
 
-## API Overview
+## API overview
 
-The REST API uses the `/api` prefix. Protected endpoints require:
+All protected routes require:
 
 ```http
 Authorization: Bearer <JWT>
@@ -187,237 +114,152 @@ Authorization: Bearer <JWT>
 
 ### Authentication
 
-| Method | Endpoint | Authentication | Purpose |
-|---|---|---:|---|
-| `POST` | `/api/auth/register` | No | Create a student account |
-| `POST` | `/api/auth/login` | No | Authenticate a user |
-| `POST` | `/api/auth/logout` | Yes | Complete the logout request |
-| `GET` | `/api/auth/me` | Yes | Retrieve the current user |
-| `POST` | `/api/auth/forgot-password` | No | Request a password-reset email |
-| `PATCH` | `/api/auth/reset-password/:token` | No | Reset a password |
+| Method | Endpoint | Access | Purpose |
+|---|---|---|---|
+| `POST` | `/api/auth/register` | Public | Create a student account |
+| `POST` | `/api/auth/login` | Public | Sign in |
+| `GET` | `/api/auth/me` | Authenticated | Get the current user |
+| `POST` | `/api/auth/logout` | Authenticated | Return a logout response |
+
+Password-reset endpoints are required by the SRS but are not mounted in the current backend.
 
 ### Profiles
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| `GET` | `/api/users/:userId` | Retrieve a public student profile |
-| `PATCH` | `/api/users/update-profile` | Update the current profile |
-| `PATCH` | `/api/users/profile-picture` | Upload a profile picture |
+| `GET` | `/api/users/:userId` | Get a public student profile |
+| `PATCH` | `/api/users/update-profile` | Update the current user's allowed profile fields |
+| `PATCH` | `/api/users/profile-picture` | Upload one profile picture |
 
-### Posts
+### Posts and comments
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| `GET` | `/api/posts` | Retrieve posts |
+| `GET` | `/api/posts` | Get posts |
 | `POST` | `/api/posts` | Create a post |
 | `PATCH` | `/api/posts/:postId` | Update an owned post |
 | `DELETE` | `/api/posts/:postId` | Delete an owned post |
-| `PATCH` | `/api/posts/:postId/like` | Toggle a post like |
-| `POST` | `/api/posts/:postId/comments` | Create a comment |
-| `GET` | `/api/posts/:postId/comments` | Retrieve comments |
+| `PATCH` | `/api/posts/:postId/like` | Like or unlike a post |
+| `GET` | `/api/posts/:postId/comments` | Get comments |
+| `POST` | `/api/posts/:postId/comments` | Add a comment |
+
+A post can contain text, one image, or both. The upload accepts JPEG, PNG, or WebP images up to 3 MB.
 
 ### Events
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| `GET` | `/api/events` | Retrieve approved events |
-| `POST` | `/api/events` | Create an event |
-| `GET` | `/api/events/pending` | Retrieve pending events as an administrator |
-| `GET` | `/api/events/:eventId/participants` | Retrieve event participants |
-| `POST` | `/api/events/:eventId/join` | Join an event |
-| `DELETE` | `/api/events/:eventId/join` | Leave an event |
-| `PATCH` | `/api/events/:eventId/review` | Approve or reject an event |
+| `GET` | `/api/events` | Get approved events |
+| `POST` | `/api/events` | Submit an event for review |
+| `GET` | `/api/events/pending` | Get pending events as an administrator |
+| `PATCH` | `/api/events/:eventId/review` | Approve or reject a pending event |
+| `GET` | `/api/events/:eventId/participants` | Get participants of an approved event as a student |
+| `POST` | `/api/events/:eventId/join` | Join an approved event as a student |
+| `DELETE` | `/api/events/:eventId/join` | Leave an event as a student |
+
+New events start as `pending`. Only approved events appear in the discoverable event list.
 
 ### Notifications
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| `GET` | `/api/notifications` | Retrieve the current user's notifications |
-| `PATCH` | `/api/notifications/:notificationId/read` | Mark one notification as read |
-| `PATCH` | `/api/notifications/read-all` | Mark all notifications as read |
+| `GET` | `/api/notifications` | Get the current user's notifications and unread count |
+| `PATCH` | `/api/notifications/:notificationId/read` | Mark one owned notification as read |
+| `PATCH` | `/api/notifications/read-all` | Mark all owned notifications as read |
 
-## Getting Started
+The backend creates notifications for selected likes, comments, event joins, and event review outcomes. It can emit a `newNotification` Socket.IO event to an authenticated recipient.
+
+## Getting started
 
 ### Prerequisites
 
-- Node.js with a version compatible with Vite 8
+- Node.js 22.12 or newer
 - npm
-- MongoDB or MongoDB Atlas
-- Cloudinary account for image uploads
-- SMTP email account for password-reset emails
-
-### Clone the repository
-
-```bash
-git clone https://github.com/elhajjame/EnaaConnect.git
-cd EnaaConnect
-```
+- MongoDB or a MongoDB Atlas connection
+- Cloudinary credentials if you want to upload images
 
 ### Install dependencies
 
 ```bash
-npm install
-npm install --prefix server
-npm install --prefix client
+git clone https://github.com/elhajjame/EnaaConnect.git
+cd EnaaConnect
+
+npm ci --prefix server
+npm ci --prefix client
 ```
 
-### Configure environment variables
+### Configure the backend
 
 Create `server/.env`:
 
 ```env
 PORT=3000
 CLIENT_URL=http://localhost:5173
-
 CONNECT_DB=your_mongodb_connection_string
-
 JWT_SECRET=your_private_jwt_secret
 JWT_EXPIRES_IN=7d
-
-EMAIL_HOST=your_smtp_host
-EMAIL_PORT=587
-EMAIL_USERNAME=your_smtp_username
-EMAIL_PASSWORD=your_smtp_password
 
 CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
 CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 ```
 
-Never commit `.env` files or secret values.
+Do not commit `.env` files or secret values.
 
-### Start the backend
+### Run the application
 
-```bash
-npm run server
-```
-
-The backend defaults to `http://localhost:3000`.
-
-### Start the frontend
-
-Open another terminal:
+Start the backend in one terminal:
 
 ```bash
-npm run client
+cd server
+npm run dev
 ```
 
-The Vite development server normally runs at `http://localhost:5173`. Its `/api` proxy forwards local requests to the backend on port `3000`.
+Start the frontend in another terminal:
 
-For a deployed frontend, an optional API URL can be configured with:
+```bash
+cd client
+npm run dev
+```
+
+The backend defaults to `http://localhost:3000`. Vite normally serves the frontend at `http://localhost:5173` and proxies local `/api` requests to the backend.
+
+For a separately hosted frontend, `VITE_API_URL` can point to the deployed API:
 
 ```env
 VITE_API_URL=https://your-api-domain.example/api
 ```
 
-Never place backend secrets in frontend environment variables. Every `VITE_` variable is exposed to the browser.
+Frontend `VITE_` variables are visible in the browser. Do not put secrets in them. A separate frontend origin also needs an appropriate API proxy or HTTP CORS configuration.
 
-## Available Scripts
+## Tests and CI
 
-### Root
+Run the backend auth tests:
 
 ```bash
-npm run client
-npm run server
+npm test --prefix server
 ```
 
-### Frontend
+The auth suite uses Supertest and a temporary MongoDB instance. It covers the implemented registration, login, current-user, and logout routes without using the development database.
+
+Check the frontend:
 
 ```bash
-npm run dev --prefix client
-npm run build --prefix client
 npm run lint --prefix client
-npm run preview --prefix client
+npm run build --prefix client
 ```
 
-### Backend
+GitHub Actions currently contains:
 
-```bash
-npm run dev --prefix server
-npm run start --prefix server
-```
+- `backend-auth.yml`, which runs the backend auth tests
+- `frontend-ci.yml`, which installs frontend dependencies, runs lint, and builds the frontend
 
-Automated backend tests have not yet been configured.
+These workflows perform CI checks. They do not deploy the application.
 
-## Security
+## Current gaps
 
-The current implementation includes:
-
-- Password hashing with bcrypt
-- JWT authentication
-- Protected API routes
-- Student and administrator authorization middleware
-- Ownership checks for post updates and deletion
-- Strict request validation with Zod
-- Restricted `@enaa.ma` registration emails
-- Hashed, expiring password-reset tokens
-- Image type, count, and size validation
-- Environment-based secret configuration
-
-Current limitations:
-
-- The backend does not provide refresh tokens.
-- Logout does not blacklist or invalidate an issued JWT.
-- Email verification is described by the SRS but is not exposed through an API route.
-- Production HTTP CORS or reverse-proxy configuration must still be finalized.
-
-## Non-Functional Requirements
-
-- **Performance:** responsive interactions and efficient database access.
-- **Reliability:** consistent API responses, validation, and error handling.
-- **Usability:** clear navigation and consistent loading, empty, error, and disabled states.
-- **Compatibility:** responsive support for modern desktop, tablet, and mobile browsers.
-
-## Roadmap
-
-### Current priority
-
-- Complete frontend authentication
-- Restore authenticated sessions
-- Protect application routes
-- Connect login and registration
-- Add logout and password recovery
-
-### Next priorities
-
-- Connect profile management
-- Replace feed mock data with backend posts
-- Connect likes and comments
-- Connect event management
-- Connect notifications
-- Add responsive loading, empty, and error states
-
-### Future SRS scope
-
-- Clubs and communities
-- Messaging
-- Trip planning
-- Global search
-- Reporting and moderation
-- Extended administrator controls
-
-## Author
-
-**Mehdi El Hajjame**
-
-Full-stack developer and project author.
-
-## Project Information
-
-| Item | Value |
-|---|---|
-| Project | EnaaConnect |
-| Document version | 1.0 |
-| Project type | Projet fil rouge |
-| SRS date | July 2026 |
-| Status | Active development |
-
----
-
-<div align="center">
-
-Built to connect, support, and strengthen the ENAA student community.
-
-[Read the complete SRS](./EnaaConnect_SRS.pdf)
-
-</div>
+- Password reset by email is required by the SRS but has no mounted backend routes.
+- Several implemented APIs still need frontend controls or screens, including comments, post editing and deletion, event participants, and notifications.
+- Logout clears the browser's stored token; the backend does not revoke an already issued JWT.
+- There is no refresh-token flow.
+- Production frontend hosting, route rewrites, API access, and deployment automation remain to be configured.
