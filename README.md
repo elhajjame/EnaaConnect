@@ -7,6 +7,7 @@ A campus community platform for ENAA students to share posts, maintain profiles,
 ## Documentation
 
 - [Software Requirements Specification (PDF)](./docs/Software%20Requirements%20fill%20rouge%20project.pdf)
+- [Planned use case diagram (PlantUML)](./docs/diagrams/planned-use-case-diagram.puml)
 - [Use case diagram source](./docs/diagrams/use-case-diagram.mmd)
 - [Class diagram source](./docs/diagrams/class-diagram.mmd)
 

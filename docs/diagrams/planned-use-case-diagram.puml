@@ -1,0 +1,109 @@
+@startuml
+title EnaaConnect - Planned Use Case Diagram
+left to right direction
+skinparam packageStyle rectangle
+
+actor Visitor
+actor "Signed-in user" as User
+actor Student
+actor Administrator
+
+Student --|> User
+Administrator --|> User
+
+rectangle "EnaaConnect - proposed system" {
+
+  package "Accounts" {
+    usecase "Register student account" as Register
+    usecase "Sign in" as SignIn
+    usecase "Request password reset" as RequestReset
+    usecase "Complete password reset" as CompleteReset
+    usecase "Sign out" as SignOut
+  }
+
+  package "Profiles" {
+    usecase "View own profile\nand authored posts" as OwnProfile
+    usecase "Edit own profile" as EditProfile
+    usecase "Upload profile picture" as UploadPicture
+    usecase "View student's public profile" as PublicProfile
+  }
+
+  package "Posts and comments" {
+    usecase "View post feed" as ViewFeed
+    usecase "Publish post" as PublishPost
+    usecase "Like or unlike post" as ReactPost
+    usecase "View post comments" as ViewComments
+    usecase "Comment on post" as CommentPost
+    usecase "Edit own post" as EditPost
+    usecase "Delete own post" as DeletePost
+  }
+
+  package "Events" {
+    usecase "View approved events" as ViewEvents
+    usecase "Submit event for review" as SubmitEvent
+    usecase "View event participants" as ViewParticipants
+    usecase "Join approved event" as JoinEvent
+    usecase "Leave joined event" as LeaveEvent
+    usecase "View pending events" as ViewPending
+    usecase "Approve or reject\npending event" as ReviewEvent
+  }
+
+  package "Notifications" {
+    usecase "Receive activity notification" as ReceiveNotice
+    usecase "View own notifications\nand unread count" as ViewNotices
+    usecase "Mark one notification\nas read" as ReadOne
+    usecase "Mark all notifications\nas read" as ReadAll
+  }
+}
+
+Visitor -- Register
+Visitor -- SignIn
+Visitor -- RequestReset
+Visitor -- CompleteReset
+
+User -- SignOut
+User -- OwnProfile
+User -- EditProfile
+User -- UploadPicture
+User -- PublicProfile
+User -- ViewFeed
+User -- PublishPost
+User -- ReactPost
+User -- ViewComments
+User -- CommentPost
+User -- DeletePost
+User -- ViewEvents
+User -- SubmitEvent
+User -- ReceiveNotice
+User -- ViewNotices
+User -- ReadOne
+User -- ReadAll
+
+Student -- EditPost
+Student -- ViewParticipants
+Student -- JoinEvent
+Student -- LeaveEvent
+
+Administrator -- ViewPending
+Administrator -- ReviewEvent
+
+note right of Register
+  Registration creates a student account.
+  Administrator registration is not specified.
+end note
+
+note right of SubmitEvent
+  A submitted event starts as pending.
+  Only approved events appear in discovery.
+end note
+
+note right of ReviewEvent
+  Only pending events may be reviewed.
+end note
+
+note right of ReceiveNotice
+  Notifications follow post likes, post comments,
+  event joins, and event review outcomes.
+end note
+
+@enduml
