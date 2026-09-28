@@ -7,8 +7,8 @@
 Connect, collaborate, organize events, share knowledge, and stay informed through one student-focused platform.
 
 [Software Requirements Specification](./EnaaConnect_SRS.pdf) ·
-[Use Case Diagram](./docs/diagrams/use-case-diagram.mmd) ·
-[Class Diagram](./docs/diagrams/class-diagram.mmd)
+[Use Case Diagram](./docs/diagrams/use_case.png) ·
+[Class Diagram](./docs/diagrams/class_daigram.png)
 
 </div>
 
