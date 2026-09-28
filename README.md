@@ -1,6 +1,16 @@
 # EnaaConnect
 
-A campus community platform for ENAA students to share posts, maintain profiles, discover approved events, and participate in campus activities.
+### A centralized digital community for ENAA students
+
+Connect, collaborate, organize events, share knowledge, and stay informed through one student-focused platform.
+
+[Software Requirements Specification](./EnaaConnect_SRS.pdf) ·
+[Use Case Diagram](./docs/diagrams/use_case.png) ·
+[Class Diagram](./docs/diagrams/class_daigram.png)
+
+</div>
+
+---
 
 > EnaaConnect is under active development. The SRS defines the target product; the implementation status below describes what currently exists in this repository.
 
