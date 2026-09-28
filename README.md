@@ -4,7 +4,7 @@
 
 Connect, collaborate, organize events, share knowledge, and stay informed through one student-focused platform.
 
-[Software Requirements Specification](./EnaaConnect_SRS.pdf) ·
+[Software Requirements Specification](./docs/Software_Requirements_fill_rouge_project.pdf) ·
 [Use Case Diagram](./docs/diagrams/use_case.png) ·
 [Class Diagram](./docs/diagrams/class_daigram.png)
 
