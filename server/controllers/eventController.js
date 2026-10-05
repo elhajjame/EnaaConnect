@@ -108,7 +108,7 @@ export const getApprovedEvents = async (req, res) => {
     const events = await Event.find({ status: "approved" })
       .sort({ date: 1, time: 1 })
       .populate("organizer", "fullName profilePicture fieldOfStudy");
-
+    console.log(events);
     const eventData = events.map((event) => {
       return {
         id: event._id,
@@ -120,6 +120,9 @@ export const getApprovedEvents = async (req, res) => {
         category: event.category,
         maximumParticipants: event.maximumParticipants,
         participantsCount: event.participants.length,
+        joined: event.participants.some((participantId) =>
+          participantId.equals(req.user._id),
+        ),
         status: event.status,
         organizer: event.organizer
           ? {
