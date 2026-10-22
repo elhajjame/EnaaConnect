@@ -296,3 +296,57 @@ export const getPendingEvents = async (req, res) => {
     return handleControllerError(res, error);
   }
 };
+
+export const editEvent = async (req, res) => {
+  try {
+    const updateEvent = await Event.findOneAndUpdate(
+      {
+        _id: req.params.eventId,
+        organizer: req.user._id,
+        status: { $in: ["pending", "rejected"] },
+      },
+      {
+        $set: {
+          title: req.body.title,
+          description: req.body.description,
+          date: new Date(`${req.body.date}T00:00:00.000Z`),
+          time: req.body.time,
+          location: req.body.location,
+          category: req.body.category,
+          maximumParticipants: req.body.maximumParticipants,
+          status: "pending",
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    if (!updateEvent) {
+      return errorResponse(res, 409, "Event not found or cannot be edited");
+    }
+    const eventData = {
+      id: updateEvent._id,
+      title: updateEvent.title,
+      description: updateEvent.description,
+      date: updateEvent.date.toISOString().slice(0, 10),
+      time: updateEvent.time,
+      location: updateEvent.location,
+      category: updateEvent.category,
+      maximumParticipants: updateEvent.maximumParticipants,
+      participants: updateEvent.participants,
+      status: updateEvent.status,
+      organizer: {
+        id: req.user._id,
+        fullName: req.user.fullName,
+        profilePicture: req.user.profilePicture,
+      },
+      createdAt: updateEvent.createdAt,
+    };
+
+    return successResponse(res, 200, eventData, "Event updated successfully");
+  } catch (error) {
+    return handleControllerError(res, error);
+  }
+};
