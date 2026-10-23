@@ -5,8 +5,9 @@ export const createPostSchema = z
     content: z
       .string()
       .trim()
-      .min(1, "Post content cannot be empty")
-      .max(2000, "Post content cannot exceed 2000 characters"),
+      .max(2000, "Post content cannot exceed 2000 characters")
+      .optional()
+      .default(""),
   })
   .strict();
 export const updatePostSchema = z

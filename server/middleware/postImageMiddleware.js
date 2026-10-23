@@ -6,9 +6,9 @@ const postImageUpload = multer({
   storage: multer.memoryStorage(),
 
   limits: {
-    fileSize: 5 * 1024 * 1024,
-    files: 5,
-    fields: 0,
+    fileSize: 3 * 1024 * 1024,
+    files: 1,
+    fields: 1,
   },
 
   fileFilter: (req, file, callback) => {
@@ -20,12 +20,12 @@ const postImageUpload = multer({
 });
 
 export const receivePostImages = (req, res, next) => {
-  const receiveImages = postImageUpload.array("images", 5);
+  const receiveImages = postImageUpload.array("images", 1);
 
   receiveImages(req, res, (error) => {
     if (error instanceof multer.MulterError) {
       if (error.code === "LIMIT_FILE_SIZE") {
-        return errorResponse(res, 400, "Each post image cannot exceed 5 MB");
+        return errorResponse(res, 400, "post image cannot exceed 3 MB");
       }
 
       if (
@@ -36,7 +36,7 @@ export const receivePostImages = (req, res, next) => {
         return errorResponse(
           res,
           400,
-          "A post can contain a maximum of 5 images",
+          "A post can contain a maximum of 1 images",
         );
       }
 

@@ -3,6 +3,7 @@ import Post from "../models/PostModel.js";
 import { errorResponse, successResponse } from "../responses/response.js";
 import handleControllerError from "../utils/handleControllerError.js";
 import { uploadPostImageToCloudinary } from "../utils/cloudinary.js";
+import { createNotification } from "../utils/createNotification.js";
 
 export const createPost = async (req, res) => {
   try {
@@ -149,6 +150,25 @@ export const togglePostLike = async (req, res) => {
     }
 
     await post.save();
+
+    if (liked) {
+      const io = req.app.get("io");
+      try {
+        await createNotification(io, {
+          recipient: post.author,
+          actor: req.user._id,
+          type: "post_like",
+          message: `${req.user.fullName} liked your post`,
+          relatedEntityType: "post",
+          relatedEntity: post._id,
+        });
+      } catch (notificationError) {
+        console.error(
+          "failed to create post like notification",
+          notificationError,
+        );
+      }
+    }
 
     const message = liked
       ? "Post liked successfully"

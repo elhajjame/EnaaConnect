@@ -1,6 +1,7 @@
 import Comment from "../models/CommentModel.js";
 import Post from "../models/PostModel.js";
 import { errorResponse, successResponse } from "../responses/response.js";
+import { createNotification } from "../utils/createNotification.js";
 import handleControllerError from "../utils/handleControllerError.js";
 
 export const createComment = async (req, res) => {
@@ -19,6 +20,24 @@ export const createComment = async (req, res) => {
     post.comments.push(comment._id);
 
     await post.save();
+
+    const io = req.app.get("io");
+
+    try {
+      await createNotification(io, {
+        recipient: post.author,
+        actor: req.user._id,
+        type: "post_comment",
+        message: `${req.user.fullName} commented on your post`,
+        relatedEntityType: "post",
+        relatedEntity: post._id,
+      });
+    } catch (notificationError) {
+      console.error(
+        "Failed to create post-comment notification:",
+        notificationError,
+      );
+    }
 
     const commentData = {
       id: comment._id,

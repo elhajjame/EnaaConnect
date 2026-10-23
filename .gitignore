@@ -1,6 +1,7 @@
 AGENTS.md
 EnaaConnect.md
 node_modules/
+ui-reference/
 .env
 *.env
 dist/
