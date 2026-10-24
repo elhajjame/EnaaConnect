@@ -2,7 +2,7 @@ import Event from "../models/EventModel.js";
 import { errorResponse, successResponse } from "../responses/response.js";
 import { createNotification } from "../utils/createNotification.js";
 import handleControllerError from "../utils/handleControllerError.js";
-
+import { createEventSchema } from "../zodValidations/eventValidation.js";
 export const createEvent = async (req, res) => {
   try {
     const event = await Event.create({
@@ -335,6 +335,106 @@ export const getPendingEvents = async (req, res) => {
       eventData,
       "Pending events retrieved successfully",
     );
+  } catch (error) {
+    return handleControllerError(res, error);
+  }
+};
+
+export const editEvent = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.eventId);
+
+    if (!event) {
+      return errorResponse(res, 404, "Event not found");
+    }
+
+    if (!event.organizer.equals(req.user._id)) {
+      return errorResponse(
+        res,
+        403,
+        "you are not authorized to edit this event ",
+      );
+    }
+
+    if (event.status === "approved") {
+      return errorResponse(res, 409, "Approved events cannot be edited");
+    }
+
+    const proposedEvent = {
+      title: event.title,
+      description: event.description,
+      date: event.date.toISOString().slice(0, 10),
+      time: event.time,
+      location: event.location,
+      category: event.category,
+      maximumParticipants: event.maximumParticipants,
+      ...req.body,
+    };
+
+    const result = createEventSchema.safeParse(proposedEvent);
+
+    if (!result.success) {
+      return errorResponse(res, 400, result.error.issues[0].message);
+    }
+
+    const changes = {};
+
+    for (const field of Object.keys(req.body)) {
+      changes[field] = result.data[field];
+    }
+
+    if (changes.date !== undefined) {
+      changes.date = new Date(`${changes.date}T00:00:00.000Z`);
+    }
+
+    const updateEvent = await Event.findOneAndUpdate(
+      {
+        _id: req.params.eventId,
+        organizer: req.user._id,
+        status: { $in: ["pending", "rejected"] },
+        updatedAt: event.updatedAt,
+      },
+      {
+        $set: {
+          ...changes,
+          status: "pending",
+          reviewedAt: null,
+          reviewedBy: null,
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    if (!updateEvent) {
+      return errorResponse(
+        res,
+        409,
+        "Event changed while you were editing it. Please reload and try again",
+      );
+    }
+    const eventData = {
+      id: updateEvent._id,
+      title: updateEvent.title,
+      description: updateEvent.description,
+      date: updateEvent.date.toISOString().slice(0, 10),
+      time: updateEvent.time,
+      location: updateEvent.location,
+      category: updateEvent.category,
+      maximumParticipants: updateEvent.maximumParticipants,
+      participants: updateEvent.participants,
+      status: updateEvent.status,
+      organizer: {
+        id: req.user._id,
+        fullName: req.user.fullName,
+        profilePicture: req.user.profilePicture,
+      },
+      createdAt: updateEvent.createdAt,
+    };
+
+    return successResponse(res, 200, eventData, "Event updated successfully");
   } catch (error) {
     return handleControllerError(res, error);
   }
