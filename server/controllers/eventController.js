@@ -120,6 +120,9 @@ export const getApprovedEvents = async (req, res) => {
         category: event.category,
         maximumParticipants: event.maximumParticipants,
         participantsCount: event.participants.length,
+        joined: event.participants.some((participantId) =>
+          participantId.equals(req.user._id),
+        ),
         status: event.status,
         organizer: event.organizer
           ? {
