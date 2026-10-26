@@ -10,6 +10,14 @@ const eventsData = [
     category: "workshops",
     participantsCount: 18,
     maximumParticipants: 24,
+    participants: [
+      { initials: "ME", fullName: "Mehdi El Hajjame", fieldOfStudy: "Web & Mobile Development" },
+      { initials: "SA", fullName: "Sara Ait Ali", fieldOfStudy: "Frontend Development" },
+      { initials: "YK", fullName: "Youssef Kabbaj", fieldOfStudy: "Software Development" },
+      { initials: "SB", fullName: "Salma Benjelloun", fieldOfStudy: "UI Design" },
+      { initials: "HE", fullName: "Hamza El Fassi", fieldOfStudy: "Full-stack Development" },
+      { initials: "IA", fullName: "Imane Alaoui", fieldOfStudy: "Web Development" },
+    ],
   },
   {
     id: 2,
@@ -22,6 +30,14 @@ const eventsData = [
     category: "education",
     participantsCount: 31,
     maximumParticipants: 50,
+    participants: [
+      { initials: "HE", fullName: "Hajar El Idrissi", fieldOfStudy: "Web & Mobile Development" },
+      { initials: "IN", fullName: "Imane Naciri", fieldOfStudy: "Project Management" },
+      { initials: "OB", fullName: "Omar Bennani", fieldOfStudy: "Software Development" },
+      { initials: "NE", fullName: "Nour El Amrani", fieldOfStudy: "UX Design" },
+      { initials: "AT", fullName: "Amine Tazi", fieldOfStudy: "Full-stack Development" },
+      { initials: "YB", fullName: "Yasmine Berrada", fieldOfStudy: "Digital Marketing" },
+    ],
   },
   {
     id: 3,
@@ -34,6 +50,14 @@ const eventsData = [
     category: "culture",
     participantsCount: 12,
     maximumParticipants: 30,
+    participants: [
+      { initials: "LA", fullName: "Lina Amrani", fieldOfStudy: "Creative Development" },
+      { initials: "ZM", fullName: "Zakaria Mansouri", fieldOfStudy: "Web Development" },
+      { initials: "AB", fullName: "Aya Berrada", fieldOfStudy: "UI Design" },
+      { initials: "RC", fullName: "Rania Chraibi", fieldOfStudy: "Frontend Development" },
+      { initials: "AE", fullName: "Adam El Khoury", fieldOfStudy: "Software Development" },
+      { initials: "ML", fullName: "Meryem Lahlou", fieldOfStudy: "Digital Design" },
+    ],
   },
 ];
 
