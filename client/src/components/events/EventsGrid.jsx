@@ -1,5 +1,9 @@
 import { CalendarDays } from "lucide-react";
 import EventCard from "./EventCard";
+import EventParticipantsModal from "./EventParticipantsModal";
+import { useRef, useState } from "react";
+import { getParticipants } from "../../services/eventsService";
+import { getApiErrorMessage } from "../../services/api";
 
 function EventsGrid({
   events,
@@ -8,6 +12,59 @@ function EventsGrid({
   leavingEventId,
   joiningEventId,
 }) {
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [participantsByEvent, setParticipantsByEvent] = useState({});
+  const [participantsLoading, setParticipantsLoading] = useState(false);
+  const [participantsError, setParticipantsError] = useState("");
+  const latestRequest = useRef(0);
+
+  async function openParticipants(event) {
+    const requestNumber = ++latestRequest.current;
+    setSelectedEvent(event);
+    clearParticipantPreview(event.id);
+    setParticipantsError("");
+    setParticipantsLoading(true);
+    try {
+      const result = await getParticipants(event.id);
+      if (requestNumber === latestRequest.current) {
+        setParticipantsByEvent((current) => ({
+          ...current,
+          [event.id]: result.participants,
+        }));
+      }
+    } catch (error) {
+      if (requestNumber === latestRequest.current) {
+        setParticipantsError(getApiErrorMessage(error));
+      }
+    } finally {
+      if (requestNumber === latestRequest.current) {
+        setParticipantsLoading(false);
+      }
+    }
+  }
+
+  function closeParticipants() {
+    latestRequest.current += 1;
+    setSelectedEvent(null);
+  }
+
+  function clearParticipantPreview(eventId) {
+    setParticipantsByEvent((current) => {
+      const updated = { ...current };
+      delete updated[eventId];
+      return updated;
+    });
+  }
+
+  function handleJoin(eventId) {
+    clearParticipantPreview(eventId);
+    onJoin(eventId);
+  }
+
+  function handleLeave(eventId) {
+    clearParticipantPreview(eventId);
+    onLeave(eventId);
+  }
   if (events.length === 0) {
     return (
       <div
@@ -31,21 +88,37 @@ function EventsGrid({
   }
 
   return (
-    <section
-      className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3"
-      aria-label="Campus events"
-    >
-      {events.map((event) => (
-        <EventCard
-          key={event.id}
-          event={event}
-          onJoin={onJoin}
-          onLeave={onLeave}
-          isJoining={joiningEventId === event.id}
-          isLeaving={leavingEventId === event.id}
+    <>
+      <section
+        id="events-list"
+        className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3"
+        aria-label="Campus events"
+      >
+        {events.map((event) => (
+          <EventCard
+            onViewParticipants={openParticipants}
+            key={event.id}
+            event={event}
+            participants={participantsByEvent[event.id]}
+            onJoin={handleJoin}
+            onLeave={handleLeave}
+            isJoining={joiningEventId === event.id}
+            isLeaving={leavingEventId === event.id}
+          />
+        ))}
+      </section>
+
+      {selectedEvent && (
+        <EventParticipantsModal
+          event={selectedEvent}
+          participants={participantsByEvent[selectedEvent.id] || []}
+          loading={participantsLoading}
+          error={participantsError}
+          onRetry={() => openParticipants(selectedEvent)}
+          onClose={closeParticipants}
         />
-      ))}
-    </section>
+      )}
+    </>
   );
 }
 

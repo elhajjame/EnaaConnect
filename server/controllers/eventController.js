@@ -291,7 +291,7 @@ export const getEventParticipants = async (req, res) => {
       res,
       200,
       eventData,
-      '"Event participants retrieved successfully"',
+      "Event participants retrieved successfully",
     );
   } catch (error) {
     return handleControllerError(res, error);

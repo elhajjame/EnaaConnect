@@ -36,3 +36,9 @@ export async function leaveEvent(eventId) {
 
   return response.data.data;
 }
+
+export async function getParticipants(eventId) {
+  const response = await api.get(`/events/${eventId}/participants`);
+
+  return response.data.data;
+}
