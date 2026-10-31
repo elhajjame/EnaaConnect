@@ -21,7 +21,7 @@ const io = new Server(httpServer, {
     methods: ["GET", "POST", "PATCH", "DELETE"],
   },
 });
-
+ 
 //here i took all the socket methos and store it inside express under the name io
 app.set("io", io);
 

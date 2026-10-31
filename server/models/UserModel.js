@@ -1,6 +1,5 @@
  import mongoose from "mongoose";
   import bcrypt from "bcryptjs";
-  import crypto from "crypto";
 
   const enaaEmailPattern = /^[a-zA-Z0-9._%+-]+@enaa\.ma$/i;
 
@@ -138,19 +137,6 @@
     );
 
     return passwordChangedTimestamp > jwtIssuedAt;
-  };
-
-  userSchema.methods.createEmailVerificationToken = function () {
-    const verificationToken = crypto.randomBytes(32).toString("hex");
-
-    this.verificationToken = crypto
-      .createHash("sha256")
-      .update(verificationToken)
-      .digest("hex");
-
-    this.verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000;
-
-    return verificationToken;
   };
 
   const User = mongoose.model("User", userSchema);
