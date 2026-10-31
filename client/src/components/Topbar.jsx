@@ -12,8 +12,10 @@ import useAuth from "../hooks/useAuth";
 import getInitials from "../utils/getInitials";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { io } from "socket.io-client";
 import { getNotifications } from "../services/notificationsService";
 import { getApiErrorMessage } from "../services/api";
+import { getStoredToken } from "../services/authStorage";
 
 const notificationStyles = {
   post_like: { Icon: Heart, iconClass: "bg-brand-green text-white" },
@@ -26,6 +28,18 @@ const notificationStyles = {
   new_message: { Icon: MessageCircle, iconClass: "bg-[#d9e8f2] text-brand-navy" },
   club_announcement: { Icon: Megaphone, iconClass: "bg-amber-100 text-amber-700" },
 };
+
+function getSocketServerUrl() {
+  const apiUrl = import.meta.env.VITE_API_URL;
+
+  if (apiUrl?.startsWith("http")) {
+    return apiUrl.replace(/\/api\/?$/, "");
+  }
+
+  return import.meta.env.DEV
+    ? "http://localhost:3000"
+    : window.location.origin;
+}
 
 function Topbar() {
   const { user } = useAuth();
@@ -66,6 +80,41 @@ function Topbar() {
       isCurrent = false;
     };
   }, [user?.id]);
+
+  useEffect(() => {
+    const token = getStoredToken();
+
+    if (!user?.id || !token) {
+      return;
+    }
+
+    const socket = io(getSocketServerUrl(), {
+      auth: { token },
+    });
+
+    socket.on("newNotification", (incomingNotification) => {
+      const notification = {
+        ...incomingNotification,
+        id: incomingNotification.id || incomingNotification._id,
+      };
+
+      setNotifications((currentNotifications) => [
+        notification,
+        ...currentNotifications.filter(
+          (current) => current.id !== notification.id,
+        ),
+      ]);
+
+      if (!notification.isRead) {
+        setUnreadCount((currentCount) => currentCount + 1);
+      }
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [user?.id]);
+
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-page/90 backdrop-blur-xl">
       <div className="flex h-20 items-center gap-3 px-4 sm:px-6 xl:px-9">
