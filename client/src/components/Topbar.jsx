@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import useAuth from "../hooks/useAuth";
 import getInitials from "../utils/getInitials";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { socket } from "../socket";
 import { getNotifications } from "../services/notificationsService";
@@ -47,8 +47,35 @@ const notificationStyles = {
   },
 };
 
+const pageHeadings = {
+  "/": {
+    title: "Campus feed",
+    subtitle: "A quick look at what is happening today.",
+  },
+  "/events": {
+    title: "Events",
+    subtitle: "Learn beyond the classroom.",
+  },
+  "/profile": {
+    title: "My profile",
+    subtitle: "Your profile and campus activity.",
+  },
+  "/profile/:userId": {
+    title: "Student profile",
+    subtitle: "View this student's profile and activity.",
+  },
+  "/admin": {
+    title: "Admin preview",
+    subtitle: "Review event requests, reports, users, and clubs.",
+  },
+};
+
 function Topbar() {
   const { user } = useAuth();
+  const { pathname } = useLocation();
+  const currentPage = pathname.startsWith("/profile/")
+    ? pageHeadings["/profile/:userId"]
+    : pageHeadings[pathname] || pageHeadings["/"];
 
   const [isNotificationsOpen, setIsNotificationOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -127,12 +154,12 @@ function Topbar() {
     <header className="sticky top-0 z-30 border-b border-line bg-page/90 backdrop-blur-xl">
       <div className="flex h-20 items-center gap-3 px-4 sm:px-6 xl:px-9">
         <div className="hidden min-w-0 lg:block">
-          <h1 className="truncate text-xl font-bold tracking-tight text-brand-navy-dark">
-            Campus feed
+          <h1 className="truncate font-display text-xl font-bold tracking-tight text-brand-navy-dark">
+            {currentPage.title}
           </h1>
 
           <p className="truncate text-xs text-muted">
-            A quick look at what is happening today.
+            {currentPage.subtitle}
           </p>
         </div>
 
@@ -147,7 +174,7 @@ function Topbar() {
 
           <input
             type="search"
-            className="w-full rounded-2xl border border-line bg-white py-3 pl-11 pr-4 text-sm text-brand-navy-dark shadow-sm placeholder:text-slate-400 focus:border-brand-green focus:ring-4 focus:ring-brand-green/10"
+            className="w-full rounded-2xl border border-line bg-white py-3 pl-11 pr-4 text-sm text-brand-navy-dark shadow-sm outline-none placeholder:text-slate-400 focus:border-brand-green focus:ring-4 focus:ring-brand-green/10"
             placeholder="Search students, clubs, events..."
           />
         </label>

@@ -1,5 +1,5 @@
-import { ImagePlus, SendHorizontal } from "lucide-react";
-import { useState } from "react";
+import { ImagePlus, SendHorizontal, X } from "lucide-react";
+import { useState, useRef } from "react";
 import { createPost } from "../../services/postService";
 import { getApiErrorMessage } from "../../services/api";
 import { Link } from "react-router-dom";
@@ -16,6 +16,17 @@ function CreatePostForm({ onPostCreated }) {
   const [errorMessage, setErrorMessage] = useState("");
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const imageInputRef = useRef(null);
+
+  function handleRemoveImage() {
+    setImage(null);
+    setErrorMessage("");
+
+    if (imageInputRef.current) {
+      imageInputRef.current.value = "";
+    }
+  }
 
   function handleImage(e) {
     const selectedImage = e.target.files?.[0];
@@ -139,7 +150,19 @@ function CreatePostForm({ onPostCreated }) {
           {image ? image.name : "Add photo"}
         </label>
 
+        {image && (
+          <button
+            type="button"
+            onClick={handleRemoveImage}
+            disabled={isSubmitting}
+            aria-label="Remove selected image"
+            className="grid h-9 w-9 place-items-center rounded-xl text-slate-500 transition hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
+        )}
         <input
+          ref={imageInputRef}
           onChange={handleImage}
           disabled={isSubmitting}
           id="post-image"
