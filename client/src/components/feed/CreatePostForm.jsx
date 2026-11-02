@@ -1,12 +1,17 @@
-import { ImagePlus, SendHorizontal, UserRound } from "lucide-react";
+import { ImagePlus, SendHorizontal } from "lucide-react";
 import { useState } from "react";
 import { createPost } from "../../services/postService";
 import { getApiErrorMessage } from "../../services/api";
+import { Link } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
+import getInitials from "../../utils/getInitials";
 
 const allowedImageType = ["image/jpeg", "image/png", "image/webp"];
 const maximumImageSize = 3 * 1024 * 1024;
 
 function CreatePostForm({ onPostCreated }) {
+  const { user } = useAuth();
+
   const [image, setImage] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [content, setContent] = useState("");
@@ -78,10 +83,26 @@ function CreatePostForm({ onPostCreated }) {
       className="rounded-card border border-line bg-white p-5 shadow-sm sm:p-6"
     >
       <div className="flex items-center gap-3">
-        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-brand-navy text-white">
+        {console.log(user)}
+        {/* <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-brand-navy text-white">
           <UserRound className="h-5 w-5" aria-hidden="true" />
-        </div>
-
+        </div> */}
+        <Link
+          to="/profile"
+          type="button"
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-brand-lime to-brand-green text-sm font-bold text-brand-navy-dark shadow-sm"
+          aria-label="Open my profile"
+        >
+          {user?.profilePicture ? (
+            <img
+              src={user.profilePicture}
+              alt={`${user.fullName}'s profile`}
+              className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-brand-lime to-brand-green text-sm font-bold text-brand-navy-dark shadow-sm"
+            />
+          ) : (
+            getInitials(user?.fullName)
+          )}
+        </Link>
         <div>
           <h2 id="create-post-title" className="font-bold text-brand-navy-dark">
             Create a post

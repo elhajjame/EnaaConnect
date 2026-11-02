@@ -161,7 +161,15 @@ function Sidebar() {
               to="/profile"
               className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-brand-lime to-brand-green text-sm font-bold text-brand-navy-dark"
             >
-              {getInitials(user?.fullName)}
+              {user?.profilePicture ? (
+                <img
+                  src={user.profilePicture}
+                  alt={`${user.fullName}'s profile`}
+                  className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-brand-lime to-brand-green text-sm font-bold text-brand-navy-dark"
+                />
+              ) : (
+                getInitials(user?.fullName)
+              )}
             </Link>
 
             <div className="min-w-0 flex-1">

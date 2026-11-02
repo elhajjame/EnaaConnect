@@ -19,14 +19,32 @@ import { getStoredToken } from "../services/authStorage";
 
 const notificationStyles = {
   post_like: { Icon: Heart, iconClass: "bg-brand-green text-white" },
-  post_comment: { Icon: MessageCircle, iconClass: "bg-amber-100 text-amber-700" },
-  event_comment: { Icon: MessageCircle, iconClass: "bg-amber-100 text-amber-700" },
-  event_join: { Icon: CalendarCheck, iconClass: "bg-[#d9e8f2] text-brand-navy" },
-  event_approved: { Icon: CalendarCheck, iconClass: "bg-[#d9e8f2] text-brand-navy" },
+  post_comment: {
+    Icon: MessageCircle,
+    iconClass: "bg-amber-100 text-amber-700",
+  },
+  event_comment: {
+    Icon: MessageCircle,
+    iconClass: "bg-amber-100 text-amber-700",
+  },
+  event_join: {
+    Icon: CalendarCheck,
+    iconClass: "bg-[#d9e8f2] text-brand-navy",
+  },
+  event_approved: {
+    Icon: CalendarCheck,
+    iconClass: "bg-[#d9e8f2] text-brand-navy",
+  },
   event_rejected: { Icon: CalendarX, iconClass: "bg-amber-100 text-amber-700" },
   club_join: { Icon: UsersRound, iconClass: "bg-[#d9eedc] text-brand-green" },
-  new_message: { Icon: MessageCircle, iconClass: "bg-[#d9e8f2] text-brand-navy" },
-  club_announcement: { Icon: Megaphone, iconClass: "bg-amber-100 text-amber-700" },
+  new_message: {
+    Icon: MessageCircle,
+    iconClass: "bg-[#d9e8f2] text-brand-navy",
+  },
+  club_announcement: {
+    Icon: Megaphone,
+    iconClass: "bg-amber-100 text-amber-700",
+  },
 };
 
 function Topbar() {
@@ -243,7 +261,15 @@ function Topbar() {
           className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-brand-lime to-brand-green text-sm font-bold text-brand-navy-dark shadow-sm"
           aria-label="Open my profile"
         >
-          {getInitials(user?.fullName)}
+          {user?.profilePicture ? (
+            <img
+              src={user.profilePicture}
+              alt={`${user.fullName}'s profile`}
+              className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-brand-lime to-brand-green text-sm font-bold text-brand-navy-dark shadow-sm"
+            />
+          ) : (
+            getInitials(user?.fullName)
+          )}
         </Link>
       </div>
     </header>
