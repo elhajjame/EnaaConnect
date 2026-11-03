@@ -25,3 +25,17 @@ export async function togglePostLike(postId) {
 
   return response.data.data;
 }
+
+export async function getComments(postId) {
+  const response = await api.get(`/posts/${postId}/comments`);
+
+  return response.data.data;
+}
+
+export async function createComment(postId, content) {
+  const response = await api.post(`/posts/${postId}/comments`, {
+    content,
+  });
+
+  return response.data.data;
+}
