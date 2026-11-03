@@ -31,7 +31,7 @@ function ProfilePostCard({ post }) {
         )}
 
         <div className="min-w-0 flex-1">
-          <h3 className="font-bold text-brand-navy-dark">Mehdi El Hajjame</h3>
+          <h3 className="font-bold text-brand-navy-dark">{authorName}</h3>
 
           <p className="text-xs text-slate-400">
             {fieldOfStudy} · {post.time}
@@ -83,7 +83,7 @@ function ProfilePostCard({ post }) {
         </button>
       </div>
 
-      {isCommentPanelOpen && <CommentPanel />}
+      {isCommentPanelOpen && <CommentPanel postId={post.id} />}
     </article>
   );
 }
