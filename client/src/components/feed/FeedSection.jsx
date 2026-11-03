@@ -1,3 +1,4 @@
+import CommentPanel from "./comments/CommentPanel";
 import FeedPost from "./FeedPost";
 
 function FeedSection({ onLike, likingPostId, posts = [] }) {
@@ -41,6 +42,7 @@ function FeedSection({ onLike, likingPostId, posts = [] }) {
                 onLike={onLike}
                 isLiking={likingPostId === post.id}
                 key={post.id}
+                commentPanel={<CommentPanel postId={post.id} />}
                 post={post}
               />
             ))}

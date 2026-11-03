@@ -1,6 +1,33 @@
 import { SendHorizontal, UserRound } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getComments } from "../../../services/postService";
+import { getApiErrorMessage } from "../../../services/api";
+import useAuth from "../../../hooks/useAuth";
 
-function CommentPanel() {
+function CommentPanel({ postId }) {
+  const { user } = useAuth();
+  const [commentsData, setCommentsData] = useState({
+    comments: [],
+    commentsCount: 0,
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    async function loadComments() {
+      try {
+        setErrorMessage("");
+
+        const commentsData = await getComments(postId);
+        setCommentsData(commentsData);
+      } catch (error) {
+        setErrorMessage(getApiErrorMessage(error));
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadComments();
+  }, []);
   return (
     <section
       aria-label="Post comments"
@@ -8,73 +35,84 @@ function CommentPanel() {
     >
       <div className="mb-4">
         <h3 className="text-sm font-bold text-brand-navy-dark">Comments</h3>
-        <p className="mt-0.5 text-[11px] text-muted">2 comments</p>
+        <p className="mt-0.5 text-[11px] text-muted">
+          {commentsData.commentsCount} comments
+        </p>
       </div>
 
       <div className="space-y-4">
-        {/* First static comment */}
-        <article className="flex items-start gap-3">
-          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-brand-navy text-white">
-            <UserRound className="h-4 w-4" aria-hidden="true" />
-          </div>
+        {console.log(setCommentsData)}
+        {isLoading && (
+          <p role="status" className="text-sm text-muted">
+            Loading comments...
+          </p>
+        )}
 
-          <div className="min-w-0 flex-1 rounded-2xl rounded-tl-md bg-page px-4 py-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <h4 className="text-sm font-bold text-brand-navy-dark">
-                Amine Zahidi
-              </h4>
+        {!isLoading && errorMessage && (
+          <p role="alert" className="text-sm text-red-700">
+            {errorMessage}
+          </p>
+        )}
 
-              <span className="rounded-full bg-brand-green/10 px-2 py-0.5 text-[10px] font-bold text-brand-green">
-                Web Development
-              </span>
+        {!isLoading && !errorMessage && commentsData.comments.length === 0 && (
+          <p className="text-sm text-muted">No comments yet.</p>
+        )}
 
-              <span className="ml-auto text-[10px] text-muted">
-                15 minutes ago
-              </span>
-            </div>
+        {!isLoading &&
+          !errorMessage &&
+          commentsData.comments.map((comment) => (
+            <article key={comment.id} className="flex items-start gap-3">
+              {comment.author?.profilePicture ? (
+                <img
+                  src={comment.author.profilePicture}
+                  alt={`${comment.author.fullName}'s profile`}
+                  className="h-9 w-9 shrink-0 rounded-xl object-cover"
+                />
+              ) : (
+                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-brand-green text-white">
+                  <UserRound className="h-4 w-4" aria-hidden="true" />
+                </div>
+              )}
 
-            <p className="mt-1 text-sm leading-6 text-slate-600">
-              I used a small context for the shared filters. It kept the page
-              component much easier to read.
-            </p>
-          </div>
-        </article>
+              <div className="min-w-0 flex-1 rounded-2xl rounded-tl-md bg-page px-4 py-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h4 className="text-sm font-bold text-brand-navy-dark">
+                    {comment.author?.fullName || "Deleted user"}
+                  </h4>
 
-        {/* Second static comment */}
-        <article className="flex items-start gap-3">
-          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-brand-green text-white">
-            <UserRound className="h-4 w-4" aria-hidden="true" />
-          </div>
+                  {comment.author?.fieldOfStudy && (
+                    <span className="rounded-full bg-brand-green/10 px-2 py-0.5 text-[10px] font-bold text-brand-green">
+                      {comment.author.fieldOfStudy}
+                    </span>
+                  )}
 
-          <div className="min-w-0 flex-1 rounded-2xl rounded-tl-md bg-page px-4 py-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <h4 className="text-sm font-bold text-brand-navy-dark">
-                Lina Mansouri
-              </h4>
+                  <span className="ml-auto text-[10px] text-muted">
+                    {new Date(comment.createdAt).toLocaleString()}
+                  </span>
+                </div>
 
-              <span className="rounded-full bg-brand-green/10 px-2 py-0.5 text-[10px] font-bold text-brand-green">
-                Frontend Development
-              </span>
-
-              <span className="ml-auto text-[10px] text-muted">
-                8 minutes ago
-              </span>
-            </div>
-
-            <p className="mt-1 text-sm leading-6 text-slate-600">
-              A custom hook is also a good option when the state does not need
-              to be shared by many components.
-            </p>
-          </div>
-        </article>
+                <p className="mt-1 text-sm leading-6 text-slate-600">
+                  {comment.content}
+                </p>
+              </div>
+            </article>
+          ))}
       </div>
 
       {/* Static comment input */}
       <div className="mt-4 border-t border-line pt-4">
         <div className="flex items-end gap-3">
-          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-brand-navy text-white">
-            <UserRound className="h-4 w-4" aria-hidden="true" />
-          </div>
+          {user?.profilePicture ? (
+            <img
+              src={user.profilePicture}
+              alt={`${user.fullName}'s profile`}
+              className="h-9 w-9 shrink-0 rounded-xl object-cover"
+            />
+          ) : (
+            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-brand-navy text-white">
+              <UserRound className="h-4 w-4" aria-hidden="true" />
+            </div>
+          )}
 
           <div className="flex min-w-0 flex-1 items-end rounded-2xl border border-line bg-page p-1.5">
             <textarea

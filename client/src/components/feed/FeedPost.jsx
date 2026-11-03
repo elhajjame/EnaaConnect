@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Ellipsis, Heart, MessageCircle } from "lucide-react";
 import getInitials from "../../utils/getInitials";
 
-export default function FeedPost({ onLike, post }) {
+export default function FeedPost({ commentPanel, onLike, post }) {
+  const [isCommentPanelOpen, setIsCommentPanelOpen] = useState(false);
   const authorName = post.author?.fullName || "Deleted user";
   const profilePicture = post.author?.profilePicture;
   const images = post.images || [];
@@ -54,17 +56,15 @@ export default function FeedPost({ onLike, post }) {
             hasMultipleImages ? "grid-cols-2" : "grid-cols-1"
           }`}
         >
-
-            <img
-              key={`${post.id}}`}
-              src={post.images}
-              alt={`Post attachment ${post.id} by ${authorName}`}
-              loading="lazy"
-              className={`w-full rounded-2xl object-cover ${
-                hasMultipleImages ? "h-44 sm:h-56" : "h-60 sm:h-80"
-              }`}
-            />
-
+          <img
+            key={`${post.id}}`}
+            src={post.images}
+            alt={`Post attachment ${post.id} by ${authorName}`}
+            loading="lazy"
+            className={`w-full rounded-2xl object-cover ${
+              hasMultipleImages ? "h-44 sm:h-56" : "h-60 sm:h-80"
+            }`}
+          />
         </div>
       )}
 
@@ -78,11 +78,18 @@ export default function FeedPost({ onLike, post }) {
           {likesCount} {likesCount === 1 ? "like" : "likes"}
         </button>
 
-        <span className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold text-slate-500">
+        <button
+          onClick={() => setIsCommentPanelOpen((isOpen) => !isOpen)}
+          type="button"
+          aria-expanded={isCommentPanelOpen}
+          className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold text-slate-500 transition hover:bg-page hover:text-brand-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green"
+        >
           <MessageCircle className="h-4 w-4" aria-hidden="true" />
           {commentsCount} {commentsCount === 1 ? "comment" : "comments"}
-        </span>
+        </button>
       </div>
+
+      {isCommentPanelOpen && commentPanel}
     </article>
   );
 }
