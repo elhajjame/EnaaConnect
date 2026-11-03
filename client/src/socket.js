@@ -12,4 +12,4 @@ function getSocketServerUrl() {
     : window.location.origin;
 }
 
-export const socket = io(getSocketServerUrl());
+export const socket = io(getSocketServerUrl(), { autoConnect: false });

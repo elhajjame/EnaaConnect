@@ -12,7 +12,7 @@ import useAuth from "../hooks/useAuth";
 import getInitials from "../utils/getInitials";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { io } from "socket.io-client";
+import { socket } from "../socket";
 import { getNotifications } from "../services/notificationsService";
 import { getApiErrorMessage } from "../services/api";
 import { getStoredToken } from "../services/authStorage";
@@ -28,18 +28,6 @@ const notificationStyles = {
   new_message: { Icon: MessageCircle, iconClass: "bg-[#d9e8f2] text-brand-navy" },
   club_announcement: { Icon: Megaphone, iconClass: "bg-amber-100 text-amber-700" },
 };
-
-function getSocketServerUrl() {
-  const apiUrl = import.meta.env.VITE_API_URL;
-
-  if (apiUrl?.startsWith("http")) {
-    return apiUrl.replace(/\/api\/?$/, "");
-  }
-
-  return import.meta.env.DEV
-    ? "http://localhost:3000"
-    : window.location.origin;
-}
 
 function Topbar() {
   const { user } = useAuth();
@@ -88,11 +76,9 @@ function Topbar() {
       return;
     }
 
-    const socket = io(getSocketServerUrl(), {
-      auth: { token },
-    });
+    socket.auth = { token };
 
-    socket.on("newNotification", (incomingNotification) => {
+    function handleNewNotification(incomingNotification) {
       const notification = {
         ...incomingNotification,
         id: incomingNotification.id || incomingNotification._id,
@@ -108,9 +94,13 @@ function Topbar() {
       if (!notification.isRead) {
         setUnreadCount((currentCount) => currentCount + 1);
       }
-    });
+    }
+
+    socket.on("newNotification", handleNewNotification);
+    socket.connect();
 
     return () => {
+      socket.off("newNotification", handleNewNotification);
       socket.disconnect();
     };
   }, [user?.id]);
