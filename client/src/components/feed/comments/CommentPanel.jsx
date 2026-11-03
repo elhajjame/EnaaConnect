@@ -1,6 +1,6 @@
 import { SendHorizontal, UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getComments } from "../../../services/postService";
+import { createComment, getComments } from "../../../services/postService";
 import { getApiErrorMessage } from "../../../services/api";
 import useAuth from "../../../hooks/useAuth";
 
@@ -12,6 +12,36 @@ function CommentPanel({ postId }) {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const [content, setContent] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
+  const handleSubmitComment = async (e) => {
+    e.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      setSubmitError("");
+
+      const newComment = await createComment(postId, content);
+
+      setCommentsData((currentData) => ({
+        comments: [...currentData.comments, newComment],
+        commentsCount: newComment.commentsCount,
+      }));
+
+      setContent("");
+    } catch (error) {
+      setSubmitError(getApiErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     async function loadComments() {
@@ -41,7 +71,6 @@ function CommentPanel({ postId }) {
       </div>
 
       <div className="space-y-4">
-        {console.log(setCommentsData)}
         {isLoading && (
           <p role="status" className="text-sm text-muted">
             Loading comments...
@@ -99,9 +128,9 @@ function CommentPanel({ postId }) {
           ))}
       </div>
 
-      {/* Static comment input */}
+      {/* comment input */}
       <div className="mt-4 border-t border-line pt-4">
-        <div className="flex items-end gap-3">
+        <form onSubmit={handleSubmitComment} className="flex items-end gap-3">
           {user?.profilePicture ? (
             <img
               src={user.profilePicture}
@@ -116,6 +145,8 @@ function CommentPanel({ postId }) {
 
           <div className="flex min-w-0 flex-1 items-end rounded-2xl border border-line bg-page p-1.5">
             <textarea
+              value={content}
+              onChange={(event) => setContent(event.target.value)}
               name="content"
               rows={1}
               maxLength={1000}
@@ -125,15 +156,20 @@ function CommentPanel({ postId }) {
             />
 
             <button
-              type="button"
+              disabled={isSubmitting}
+              type="submit"
               aria-label="Post comment"
               className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-brand-lime text-brand-navy-dark transition hover:bg-brand-green hover:text-white"
             >
               <SendHorizontal className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
-        </div>
-
+        </form>
+        {submitError && (
+          <p role="alert" className="mt-2 text-right text-xs text-red-700">
+            {submitError}
+          </p>
+        )}
         <p className="mt-1.5 text-right text-[10px] text-muted">
           Maximum 1000 characters
         </p>
