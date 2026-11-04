@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import ProfileInfo from "../components/profile/ProfileInfo";
 import ProfilePosts from "../components/profile/ProfilePosts";
 import useAuth from "../hooks/useAuth";
@@ -9,6 +10,11 @@ import PageLoader from "../components/loading/PageLoader";
 
 function ProfilePage() {
   const { user, updateUser } = useAuth();
+
+  const { userId: routeUserId } = useParams();
+  const profileId = routeUserId || user?.id;
+  const isOwnProfile = profileId === user?.id;
+
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -20,17 +26,18 @@ function ProfilePage() {
 
   useEffect(() => {
     async function loadProfile() {
-      if (!user?.id) {
+      if (!profileId) {
         setIsLoading(false);
         return;
       }
+      setIsLoading(true);
       try {
         setErrorMessage("");
 
         const profileData =
-          user.role === "admin"
+          isOwnProfile && user.role === "admin"
             ? await getCurrentUser()
-            : await getProfile(user.id);
+            : await getProfile(profileId);
 
         setProfile(profileData);
       } catch (error) {
@@ -40,7 +47,7 @@ function ProfilePage() {
       }
     }
     loadProfile();
-  }, [user?.id, user?.role]);
+  }, [profileId, isOwnProfile, user?.role]);
 
   if (isLoading) {
     return (
@@ -64,8 +71,12 @@ function ProfilePage() {
 
   return (
     <div className="space-y-6">
-      <ProfileInfo profile={profile} onProfileUpdated={handleProfileUpdated} />
-      <ProfilePosts userId={user?.id} profileName={profile.fullName} />
+      <ProfileInfo
+        isOwnProfile={isOwnProfile}
+        profile={profile}
+        onProfileUpdated={handleProfileUpdated}
+      />
+      <ProfilePosts userId={profile.id} profileName={profile.fullName} />
     </div>
   );
 }

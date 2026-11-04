@@ -74,6 +74,7 @@ export const updateMyProfile = async (req, res) => {
     return handleControllerError(res, error);
   }
 };
+
 export const updateProfilePicture = async (req, res) => {
   try {
     const result = await uploadProfilePicToCloudinary(

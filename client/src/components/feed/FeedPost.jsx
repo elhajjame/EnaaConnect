@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Ellipsis, Heart, MessageCircle } from "lucide-react";
 import getInitials from "../../utils/getInitials";
+import { Link } from "react-router-dom";
 
 export default function FeedPost({ commentPanel, onLike, post }) {
   const [isCommentPanelOpen, setIsCommentPanelOpen] = useState(false);
@@ -32,7 +33,12 @@ export default function FeedPost({ commentPanel, onLike, post }) {
         )}
 
         <div className="min-w-0 flex-1">
-          <h3 className="font-bold text-brand-navy-dark">{authorName}</h3>
+          <h3 className="font-bold text-brand-navy-dark">
+            {post.author?.id ? (
+              <Link to={`/profile/${post.author.id}`}
+              className='hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green'>{authorName}</Link>
+            ):(authorName)}
+          </h3>
 
           <p className="mt-1 text-xs text-muted">{post.createdAt}</p>
         </div>

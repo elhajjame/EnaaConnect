@@ -26,7 +26,7 @@ function App() {
           <Route index element={<FeedPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/events" element={<EventsPage />} />
-
+          <Route path="/profile/:userId" element={<ProfilePage />} />
           <Route element={<AdminRoute />}>
             <Route path="/admin" element={<AdminEventsPage />} />
           </Route>
