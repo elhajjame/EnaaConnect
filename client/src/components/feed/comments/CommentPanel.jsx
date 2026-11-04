@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { createComment, getComments } from "../../../services/postService";
 import { getApiErrorMessage } from "../../../services/api";
 import useAuth from "../../../hooks/useAuth";
+import { Link } from "react-router-dom";
 
 function CommentPanel({ postId }) {
   const { user } = useAuth();
@@ -106,7 +107,16 @@ function CommentPanel({ postId }) {
               <div className="min-w-0 flex-1 rounded-2xl rounded-tl-md bg-page px-4 py-3">
                 <div className="flex flex-wrap items-center gap-2">
                   <h4 className="text-sm font-bold text-brand-navy-dark">
-                    {comment.author?.fullName || "Deleted user"}
+                    {comment.author?.id ? (
+                      <Link
+                        to={`/profile/${comment.author.id}`}
+                        className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green"
+                      >
+                        {comment.author.fullName}
+                      </Link>
+                    ) : (
+                      comment.author?.fullName || "Deleted user"
+                    )}
                   </h4>
 
                   {comment.author?.fieldOfStudy && (

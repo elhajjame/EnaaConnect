@@ -5,7 +5,7 @@ import { useState } from "react";
 import EditProfile from "./EditProfile";
 import ProfileAvatar from "./ProfileAvatar";
 
-function ProfileInfo({ profile, onProfileUpdated }) {
+function ProfileInfo({ isOwnProfile, profile, onProfileUpdated }) {
   const [isEditOpen, setIsEditOpen] = useState(false);
 
   const isAdmin = profile.role === "admin";
@@ -43,17 +43,18 @@ function ProfileInfo({ profile, onProfileUpdated }) {
               </p>
             </div>
           </div>
-
-          <button
-            onClick={() => {
-              setIsEditOpen(true);
-            }}
-            type="button"
-            className="inline-flex w-fit items-center gap-2 rounded-xl border border-line px-4 py-2.5 text-sm font-bold text-brand-navy transition hover:bg-page focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green"
-          >
-            <Pencil className="h-4 w-4" aria-hidden="true" />
-            Edit profile
-          </button>
+          {isOwnProfile && (
+            <button
+              onClick={() => {
+                setIsEditOpen(true);
+              }}
+              type="button"
+              className="inline-flex w-fit items-center gap-2 rounded-xl border border-line px-4 py-2.5 text-sm font-bold text-brand-navy transition hover:bg-page focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green"
+            >
+              <Pencil className="h-4 w-4" aria-hidden="true" />
+              Edit profile
+            </button>
+          )}
         </div>
 
         <div className="mt-7 grid gap-7 lg:grid-cols-[1fr_320px]">
@@ -102,12 +103,14 @@ function ProfileInfo({ profile, onProfileUpdated }) {
           </aside>
         </div>
       </div>
-      <EditProfile
-        onProfileUpdated={onProfileUpdated}
-        profile={profile}
-        isOpen={isEditOpen}
-        onClose={() => setIsEditOpen(false)}
-      />
+      {isOwnProfile && (
+        <EditProfile
+          onProfileUpdated={onProfileUpdated}
+          profile={profile}
+          isOpen={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
+        />
+      )}
     </section>
   );
 }
