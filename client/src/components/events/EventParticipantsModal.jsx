@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { UsersRound, X } from "lucide-react";
 import getInitials from "../../utils/getInitials";
+import { Link } from "react-router-dom";
 
 const avatarColors = ["bg-brand-lime", "bg-[#86c48f]", "bg-[#b8d3e6]"];
 
@@ -124,9 +125,9 @@ function EventParticipantsModal({
                     </span>
                   )}
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-bold text-brand-navy-dark">
+                    <Link to={`/profile/${participant.id}`} className="block truncate text-sm font-bold text-brand-navy-dark hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green">
                       {participant.fullName}
-                    </p>
+                    </Link>
                     {participant.fieldOfStudy && (
                       <p className="mt-1 truncate text-xs text-slate-500">
                         {participant.fieldOfStudy}
