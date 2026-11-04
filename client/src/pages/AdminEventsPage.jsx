@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { CalendarDays, ShieldCheck } from "lucide-react";
 import { getPendingEvents, reviewEvent } from "../services/eventsService";
 import { getApiErrorMessage } from "../services/api";
+import PageLoader from "../components/loading/PageLoader";
 
 function formatEventDate(date) {
   return new Date(`${date}T00:00:00`).toLocaleDateString("en-US", {
@@ -132,9 +133,9 @@ function AdminEventsPage() {
         </header>
 
         {isLoading && (
-          <p className="py-12 text-center text-sm text-muted">
-            Loading pending events...
-          </p>
+          <div className="grid min-h-72 place-items-center">
+            <PageLoader />
+          </div>
         )}
 
         {!isLoading && !errorMessage && events.length === 0 && (

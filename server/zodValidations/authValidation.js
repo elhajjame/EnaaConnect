@@ -53,32 +53,3 @@ export const loginSchema = z
       .max(128, "Password cannot exceed 128 characters"),
   })
   .strict();
-
-export const forgetPasswordSchema = z
-  .object({
-    email: emailSchema,
-  })
-  .strict();
-
-export const resetPasswordSchema = z
-  .object({
-    password: passwordSchema,
-
-    confirmPassword: z.string({
-      message: "Password confirmation must be a string",
-    }),
-  })
-  .strict()
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
-
-export const resetPasswordTokenSchema = z
-  .object({
-    token: z
-      .string()
-      .trim()
-      .regex(/^[a-fA-F0-9]{64}$/, "Invalid password reset token"),
-  })
-  .strict();

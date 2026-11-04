@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   createEvent,
+  editEvent,
   getApprovedEvents,
   getEventParticipants,
   getPendingEvents,
@@ -54,5 +55,13 @@ route.delete(
   requireStudent,
   validateEventParams,
   leaveEvent,
+);
+
+route.patch(
+  "/:eventId/update",
+  protect,
+  requireStudent,
+  validateEventParams,
+  editEvent,
 );
 export default route;

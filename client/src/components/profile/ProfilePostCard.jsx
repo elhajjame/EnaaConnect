@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { Ellipsis, Heart, MessageCircle } from "lucide-react";
 import getInitials from "../../utils/getInitials";
+import CommentPanel from "../feed/comments/CommentPanel";
 
 function ProfilePostCard({ post }) {
+  const [isCommentPanelOpen, setIsCommentPanelOpen] = useState(false);
   const authorName = post.author?.fullName;
   const profilePicture = post.author?.profilePicture;
   const fieldOfStudy = post.author?.fieldOfStudy;
@@ -28,7 +31,7 @@ function ProfilePostCard({ post }) {
         )}
 
         <div className="min-w-0 flex-1">
-          <h3 className="font-bold text-brand-navy-dark">Mehdi El Hajjame</h3>
+          <h3 className="font-bold text-brand-navy-dark">{authorName}</h3>
 
           <p className="text-xs text-slate-400">
             {fieldOfStudy} · {post.time}
@@ -70,13 +73,17 @@ function ProfilePostCard({ post }) {
         </button>
 
         <button
+          onClick={() => setIsCommentPanelOpen((isOpen) => !isOpen)}
           type="button"
+          aria-expanded={isCommentPanelOpen}
           className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold text-slate-500 transition hover:bg-slate-100 hover:text-brand-green"
         >
           <MessageCircle className="h-4 w-4" aria-hidden="true" />
           {commentsCount} comments
         </button>
       </div>
+
+      {isCommentPanelOpen && <CommentPanel postId={post.id} />}
     </article>
   );
 }

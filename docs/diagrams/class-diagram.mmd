@@ -1,208 +1,92 @@
-%% EnaaConnect - Domain Class Diagram
-%% Version 2.0 - aligned with EnaaConnect SRS
-
+%% EnaaConnect Mongoose models and schema references currently in server/models.
+%% The User verification fields exist in the schema, but no verification route is mounted.
+%% Notification.relatedEntity is an untyped ObjectId, not a Mongoose ref.
+%% Post.likes stores User ObjectIds. There is no separate Like model.
 classDiagram
-direction TB
+  direction LR
 
-class Role {
-  <<enumeration>>
-  STUDENT
-  ADMIN
-}
+  class User {
+    +ObjectId _id
+    +String fullName
+    +String email
+    +String password
+    +String confirmPassword
+    +String role
+    +Boolean isVerified
+    +String fieldOfStudy
+    +String academicYear
+    +String profilePicture
+    +String biography
+    +String[] interests
+    +String verificationToken
+    +Date verificationTokenExpires
+    +Date passwordChangedAt
+    +Date createdAt
+    +Date updatedAt
+  }
 
-class EventStatus {
-  <<enumeration>>
-  PENDING
-  APPROVED
-  REJECTED
-  CANCELLED
-}
+  class Post {
+    +ObjectId _id
+    +ObjectId author
+    +String content
+    +String[] images
+    +ObjectId[] likes
+    +ObjectId[] comments
+    +Date createdAt
+    +Date updatedAt
+  }
 
-class PostType {
-  <<enumeration>>
-  STANDARD
-  QUESTION
-  ANNOUNCEMENT
-}
+  class Comment {
+    +ObjectId _id
+    +ObjectId post
+    +ObjectId author
+    +String content
+    +Date createdAt
+    +Date updatedAt
+  }
 
-class ReportStatus {
-  <<enumeration>>
-  PENDING
-  RESOLVED
-  DISMISSED
-}
+  class Event {
+    +ObjectId _id
+    +String title
+    +String description
+    +Date date
+    +String time
+    +String location
+    +String category
+    +Number maximumParticipants
+    +ObjectId organizer
+    +ObjectId[] participants
+    +String status
+    +ObjectId reviewedBy
+    +Date reviewedAt
+    +Date createdAt
+    +Date updatedAt
+  }
 
-class User {
-  -id: ObjectId
-  -fullName: String
-  -email: String
-  -passwordHash: String
-  -role: Role
-  -profilePicture: String
-  -biography: String
-  -fieldOfStudy: String
-  -academicYear: String
-  -interests: String[]
-  -isVerified: Boolean
-  -createdAt: Date
-  -updatedAt: Date
-  +updateProfile(data): User
-}
+  class Notification {
+    +ObjectId _id
+    +ObjectId recipient
+    +ObjectId actor
+    +String type
+    +String message
+    +String relatedEntityType
+    +ObjectId relatedEntity
+    +Boolean isRead
+    +Date createdAt
+    +Date updatedAt
+  }
 
-class Post {
-  -id: ObjectId
-  -author: ObjectId
-  -club: ObjectId?
-  -type: PostType
-  -content: String
-  -images: String[]
-  -likes: ObjectId[]
-  -createdAt: Date
-  -updatedAt: Date
-  +addLike(userId): void
-  +removeLike(userId): void
-}
+  note for Post "likes stores User IDs; the controller adds or removes the signed-in user"
+  note for Notification "post_like is created only when a like is added to another user's post"
 
-class Comment {
-  -id: ObjectId
-  -post: ObjectId
-  -author: ObjectId
-  -content: String
-  -createdAt: Date
-  -updatedAt: Date
-}
+  User "1" --> "0..*" Post : author
+  Post "0..*" --> "0..*" User : likes
+  Post "1" --> "0..*" Comment : comments
+  User "1" --> "0..*" Comment : author
 
-class Event {
-  -id: ObjectId
-  -organizer: ObjectId
-  -title: String
-  -description: String
-  -dateTime: Date
-  -location: String
-  -category: String
-  -capacity: Number
-  -participants: ObjectId[]
-  -status: EventStatus
-  -reviewedBy: ObjectId?
-  -reviewedAt: Date?
-  -createdAt: Date
-  -updatedAt: Date
-  +hasCapacity(): Boolean
-  +addParticipant(userId): void
-  +removeParticipant(userId): void
-}
+  User "1" --> "0..*" Event : organizer
+  User "0..*" -- "0..*" Event : participants
+  User "0..1" --> "0..*" Event : reviewedBy
 
-class EventComment {
-  -id: ObjectId
-  -event: ObjectId
-  -author: ObjectId
-  -content: String
-  -createdAt: Date
-  -updatedAt: Date
-}
-
-class Club {
-  -id: ObjectId
-  -name: String
-  -description: String
-  -logo: String
-  -leader: ObjectId
-  -members: ObjectId[]
-  -createdAt: Date
-  -updatedAt: Date
-  +addMember(userId): void
-  +removeMember(userId): void
-  +changeLeader(userId): void
-}
-
-class Conversation {
-  -id: ObjectId
-  -participants: ObjectId[]
-  -isGroup: Boolean
-  -groupName: String?
-  -createdBy: ObjectId
-  -createdAt: Date
-  -updatedAt: Date
-  +addParticipant(userId): void
-  +removeParticipant(userId): void
-}
-
-class Message {
-  -id: ObjectId
-  -conversation: ObjectId
-  -sender: ObjectId
-  -content: String
-  -attachments: String[]
-  -readBy: ObjectId[]
-  -createdAt: Date
-  +markAsRead(userId): void
-}
-
-class Trip {
-  -id: ObjectId
-  -organizer: ObjectId
-  -conversation: ObjectId
-  -title: String
-  -description: String
-  -destination: String
-  -tripDate: Date
-  -budget: Number
-  -capacity: Number
-  -participants: ObjectId[]
-  -createdAt: Date
-  -updatedAt: Date
-  +hasCapacity(): Boolean
-  +addParticipant(userId): void
-  +removeParticipant(userId): void
-}
-
-class Notification {
-  -id: ObjectId
-  -recipient: ObjectId
-  -actor: ObjectId?
-  -type: String
-  -message: String
-  -relatedEntityType: String
-  -relatedEntity: ObjectId
-  -isRead: Boolean
-  -createdAt: Date
-  +markAsRead(): void
-}
-
-class Report {
-  -id: ObjectId
-  -reporter: ObjectId
-  -targetType: String
-  -targetId: ObjectId
-  -reason: String
-  -status: ReportStatus
-  -reviewedBy: ObjectId?
-  -createdAt: Date
-  -updatedAt: Date
-  +resolve(adminId): void
-  +dismiss(adminId): void
-}
-
-User "1" --> "0..*" Post : authors
-Post "1" *-- "0..*" Comment : has
-User "1" --> "0..*" Comment : writes
-
-User "1" --> "0..*" Event : organizes
-User "0..*" -- "0..*" Event : joins
-Event "1" *-- "0..*" EventComment : has
-User "1" --> "0..*" EventComment : writes
-
-User "1" --> "0..*" Club : leads
-User "0..*" -- "0..*" Club : joins
-Club "0..1" --> "0..*" Post : publishes announcements
-
-User "0..*" -- "0..*" Conversation : participates in
-Conversation "1" *-- "0..*" Message : contains
-User "1" --> "0..*" Message : sends
-
-User "1" --> "0..*" Trip : organizes
-User "0..*" -- "0..*" Trip : joins
-Trip "1" --> "1" Conversation : uses participant chat
-
-User "1" --> "0..*" Notification : receives
-User "1" --> "0..*" Report : submits
+  User "1" --> "0..*" Notification : recipient
+  User "0..1" --> "0..*" Notification : actor

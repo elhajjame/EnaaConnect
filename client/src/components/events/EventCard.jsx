@@ -1,14 +1,19 @@
 import {
   Bookmark,
   BusFront,
+  ChevronRight,
   Code2,
   GraduationCap,
   MapPin,
   Music,
   Trophy,
+  UsersRound,
   WandSparkles,
 } from "lucide-react";
 import useAuth from "../../hooks/useAuth";
+import getInitials from "../../utils/getInitials";
+
+const avatarColors = ["bg-brand-lime", "bg-[#86c48f]", "bg-[#b8d3e6]"];
 
 const categoryStyles = {
   education: {
@@ -60,13 +65,21 @@ const categoryStyles = {
   },
 };
 
-function EventCard({ event, onJoin, onLeave, isJoining, isLeaving }) {
+function EventCard({
+  event,
+  onViewParticipants,
+  participants,
+  onJoin,
+  onLeave,
+  isJoining,
+  isLeaving,
+}) {
   const { user } = useAuth();
   const style = categoryStyles[event.category] || categoryStyles.education;
   const DecorativeIcon = style.Icon;
-
   const isFull =
     event.isFull || event.participantsCount >= event.maximumParticipants;
+  const previewParticipants = participants?.slice(0, 3) || [];
   return (
     <article className="overflow-hidden rounded-[1.7rem] border border-slate-200 bg-white shadow-card">
       <div className={`relative h-44 p-5 text-white ${style.background}`}>
@@ -119,6 +132,55 @@ function EventCard({ event, onJoin, onLeave, isJoining, isLeaving }) {
             {event.participantsCount} / {event.maximumParticipants} seats
           </p>
         </div>
+        {user?.role === "student" && (
+          <button
+            type="button"
+            onClick={() => onViewParticipants(event)}
+            className="mt-4 flex w-full items-center gap-3 rounded-xl bg-page px-3 py-2.5 text-left transition hover:bg-[#eef8ef] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green focus-visible:ring-offset-2"
+            aria-label={`View participants for ${event.title}`}
+          >
+            <span className="flex shrink-0 -space-x-2" aria-hidden="true">
+              {previewParticipants.length > 0 ? (
+                previewParticipants.map((participant, index) =>
+                  participant.profilePicture ? (
+                    <img
+                      key={participant.id}
+                      src={participant.profilePicture}
+                      alt=""
+                      className="h-9 w-9 rounded-full border-2 border-white object-cover"
+                    />
+                  ) : (
+                    <span
+                      key={participant.id}
+                      className={`grid h-9 w-9 place-items-center rounded-full border-2 border-white font-display text-[10px] font-bold text-brand-navy-dark ${avatarColors[index]}`}
+                    >
+                      {getInitials(participant.fullName)}
+                    </span>
+                  ),
+                )
+              ) : (
+                <span className="grid h-9 w-9 place-items-center rounded-full border-2 border-white bg-[#d9e8f2] text-brand-navy-dark">
+                  <UsersRound className="h-4 w-4" />
+                </span>
+              )}
+            </span>
+
+            <span className="min-w-0 flex-1">
+              <span className="block text-xs font-bold text-brand-navy-dark">
+                {event.participantsCount} students joined
+              </span>
+              <span className="block text-[11px] text-slate-500">
+                View participants
+              </span>
+            </span>
+
+            <ChevronRight
+              className="h-4 w-4 shrink-0 text-brand-green"
+              aria-hidden="true"
+            />
+          </button>
+        )}
+
         {user?.role === "student" && (
           <button
             type="button"

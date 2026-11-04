@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import { useState } from "react";
 import { getApiErrorMessage } from "../../services/api";
+import FullPageLoader from "../../components/loading/FullPageLoader";
 
 const inputClassName =
   "h-[3.25rem] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-base text-brand-navy-dark shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-green focus:ring-4 focus:ring-brand-green/10";
@@ -54,6 +55,9 @@ function RegisterPage() {
       setIsSubmitting(false);
     }
   };
+  if (isSubmitting) {
+    return <FullPageLoader />;
+  }
   return (
     <form
       onSubmit={handleSubmit}
@@ -87,7 +91,7 @@ function RegisterPage() {
           id="register-email"
           name="email"
           type="email"
-          placeholder="name@enaa.ma"
+          placeholder="@enaa.ma"
           className={inputClassName}
         />
       </AuthField>

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import { useState } from "react";
 import { getApiErrorMessage } from "../../services/api";
+import FullPageLoader from "../../components/loading/FullPageLoader";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -40,6 +41,9 @@ function LoginPage() {
     setShowPassword((currentValue) => !currentValue);
   }
 
+  if (isSubmitting) {
+    return <FullPageLoader />;
+  }
   return (
     <form
       onSubmit={handleSubmit}
@@ -65,14 +69,6 @@ function LoginPage() {
         id="login-password"
         label="Password"
         icon={LockKeyhole}
-        action={
-          <button
-            type="button"
-            className="rounded-md text-sm font-bold text-brand-green hover:text-brand-green-dark focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-green/20"
-          >
-            Forgot password?
-          </button>
-        }
       >
         <input
           value={password}

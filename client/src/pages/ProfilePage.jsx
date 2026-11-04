@@ -5,6 +5,8 @@ import useAuth from "../hooks/useAuth";
 import { getProfile } from "../services/profileService";
 import { getApiErrorMessage } from "../services/api";
 import { getCurrentUser } from "../context/AuthService";
+import PageLoader from "../components/loading/PageLoader";
+
 function ProfilePage() {
   const { user, updateUser } = useAuth();
   const [profile, setProfile] = useState(null);
@@ -41,7 +43,11 @@ function ProfilePage() {
   }, [user?.id, user?.role]);
 
   if (isLoading) {
-    return;
+    return (
+      <div className="grid min-h-[60vh] place-items-center">
+        <PageLoader />
+      </div>
+    );
   }
 
   if (errorMessage) {
@@ -59,7 +65,7 @@ function ProfilePage() {
   return (
     <div className="space-y-6">
       <ProfileInfo profile={profile} onProfileUpdated={handleProfileUpdated} />
-      <ProfilePosts userId={user?.id} profileNam={user?.fullName} />
+      <ProfilePosts userId={user?.id} profileName={profile.fullName} />
     </div>
   );
 }
