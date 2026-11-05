@@ -1,0 +1,3 @@
+[submodule "ui-reference/enaaConnect-ui"]
+    path = ui-reference/enaaConnect-ui
+    url = <actual-ui-reference-repository-url>
