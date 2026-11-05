@@ -5,6 +5,7 @@ import profileRoute from "./routes/profileRoute.js";
 import postRoute from "./routes/postRoute.js";
 import eventRoute from "./routes/eventRoute.js";
 import notificationRoute from "./routes/notificationRoute.js";
+import searchRoute from "./routes/searchRoute.js";
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use("/api/users", profileRoute);
 app.use("/api/posts", postRoute);
 app.use("/api/events", eventRoute);
 app.use("/api/notifications", notificationRoute);
+app.use("/api/search", searchRoute);
 
 app.get("/", (req, res) => {
   res.send("api is working");
