@@ -16,6 +16,7 @@ import { getNotifications } from "../services/notificationsService";
 import { getApiErrorMessage } from "../services/api";
 import { getStoredToken } from "../services/authStorage";
 import SearchBox from "./SearchBox";
+import { useRef } from "react";
 
 const notificationStyles = {
   post_like: { Icon: Heart, iconClass: "bg-brand-green text-white" },
@@ -82,6 +83,23 @@ function Topbar() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoadingNotifications, setIsLoadingNotifications] = useState(true);
   const [notificationError, setNotificationError] = useState("");
+
+  const notificationAreaRef = useRef(null);
+
+  useEffect(() => {
+    function handleOutsideClick(event) {
+      if (!notificationAreaRef.current?.contains(event.target)) {
+        setIsNotificationOpen(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("pointerdown", handleOutsideClick);
+    };
+  }, []);
+
   useEffect(() => {
     let isCurrent = true;
 
@@ -158,9 +176,7 @@ function Topbar() {
             {currentPage.title}
           </h1>
 
-          <p className="truncate text-xs text-muted">
-            {currentPage.subtitle}
-          </p>
+          <p className="truncate text-xs text-muted">{currentPage.subtitle}</p>
         </div>
 
         <SearchBox />
