@@ -5,7 +5,6 @@ import {
   Heart,
   Megaphone,
   MessageCircle,
-  Search,
   UsersRound,
 } from "lucide-react";
 import useAuth from "../hooks/useAuth";
@@ -16,6 +15,7 @@ import { socket } from "../socket";
 import { getNotifications } from "../services/notificationsService";
 import { getApiErrorMessage } from "../services/api";
 import { getStoredToken } from "../services/authStorage";
+import SearchBox from "./SearchBox";
 
 const notificationStyles = {
   post_like: { Icon: Heart, iconClass: "bg-brand-green text-white" },
@@ -163,21 +163,7 @@ function Topbar() {
           </p>
         </div>
 
-        <label
-          className="relative min-w-0 flex-1 max-w-xl"
-          aria-label="Search EnaaConnect"
-        >
-          <Search
-            className="pointer-events-none absolute left-4 top-1/2 h-[1.125rem] w-[1.125rem] -translate-y-1/2 text-slate-400"
-            aria-hidden="true"
-          />
-
-          <input
-            type="search"
-            className="w-full rounded-2xl border border-line bg-white py-3 pl-11 pr-4 text-sm text-brand-navy-dark shadow-sm outline-none placeholder:text-slate-400 focus:border-brand-green focus:ring-4 focus:ring-brand-green/10"
-            placeholder="Search students, clubs, events..."
-          />
-        </label>
+        <SearchBox />
 
         <div className="relative ml-auto">
           <button
