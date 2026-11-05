@@ -15,15 +15,10 @@ function SearchBox() {
     const searchText = query.trim();
 
     if (!searchText) {
-      setUsers([]);
-      setError("");
-      setIsLoading(false);
       return;
     }
 
     let isCurrent = true;
-    setIsLoading(true);
-    setError("");
 
     searchUsers({ q: searchText })
       .then((results) => {
@@ -51,7 +46,19 @@ function SearchBox() {
         <input
           type="search"
           value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={(event) => {
+            const value = event.target.value;
+            setQuery(value);
+
+            if (!value.trim()) {
+              setUsers([]);
+              setError("");
+              setIsLoading(false);
+            } else {
+              setIsLoading(true);
+              setError("");
+            }
+          }}
           onFocus={() => setIsOpen(true)}
           placeholder="Search students by name..."
           className="w-full rounded-2xl border border-line bg-white py-3 pl-11 pr-4 text-sm text-brand-navy-dark shadow-sm outline-none placeholder:text-slate-400 focus:border-brand-green focus:ring-4 focus:ring-brand-green/10"
