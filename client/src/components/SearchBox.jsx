@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Search, UserRound } from "lucide-react";
 import { Link } from "react-router-dom";
 import { searchUsers } from "../services/searchService";
@@ -10,6 +10,21 @@ function SearchBox() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+const searchAreaRef = useRef(null);
+  useEffect(() => {
+    function handleOutsideClick(event) {
+      if (!searchAreaRef.current?.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("pointerdown", handleOutsideClick);
+    };
+  }, []);
 
   useEffect(() => {
     const searchText = query.trim();
