@@ -9,6 +9,38 @@ import searchRoute from "./routes/searchRoute.js";
 
 const app = express();
 
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  const allowedOrigins = [
+    ...(process.env.CLIENT_URL || "")
+      .split(",")
+      .map((allowedOrigin) => allowedOrigin.trim())
+      .filter(Boolean),
+    "http://localhost:5173",
+  ];
+
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Vary", "Origin");
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET,POST,PATCH,DELETE,OPTIONS",
+    );
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Authorization,Content-Type",
+    );
+  }
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(
+      origin && allowedOrigins.includes(origin) ? 204 : 403,
+    );
+  }
+
+  next();
+});
+
 app.use(express.json());
 
 app.use(morgan("dev"));
