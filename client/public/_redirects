@@ -1,0 +1,8 @@
+# SPA fallback for the React Router pages.
+# /api/* and /socket.io/* are intentionally NOT listed: they go to the Netlify Server.
+/login         /index.html   200
+/register      /index.html   200
+/profile       /index.html   200
+/profile/*     /index.html   200
+/events        /index.html   200
+/admin         /index.html   200

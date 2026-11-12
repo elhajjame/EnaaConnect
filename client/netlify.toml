@@ -1,0 +1,5 @@
+[build]
+  # Install the API's dependencies (../server) so the Netlify Server can bundle them,
+  # then build the React app.
+  command = "npm ci --prefix ../server --omit=dev && npm run build"
+  publish = "dist"
