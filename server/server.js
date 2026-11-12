@@ -21,7 +21,7 @@ const io = new Server(httpServer, {
     methods: ["GET", "POST", "PATCH", "DELETE"],
   },
 });
- 
+
 //here i took all the socket methos and store it inside express under the name io
 app.set("io", io);
 
@@ -38,11 +38,11 @@ const joinUserRoom = (socket) => {
 io.use(authenticateSocket);
 io.on("connection", (socket) => {
   const userRoom = joinUserRoom(socket);
-  console.log(`socket connected ${socket.id}`);
-  console.log(`socket joined room: ${userRoom}`);
-  
+  // console.log(`socket connected ${socket.id}`);
+  // console.log(`socket joined room: ${userRoom}`);
+
   socket.on("disconnect", (reason) => {
-    console.log(`socket disconnected: ${socket.id} Reason: ${reason}`);
+    console.log(`socket disconnected, Reason: ${reason}`);
   });
 });
 
